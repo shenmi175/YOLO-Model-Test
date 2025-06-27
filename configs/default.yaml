@@ -1,0 +1,6 @@
+model_path: models/best.pt
+confidence_threshold: 0.50
+iou_threshold: 0.45
+data_dir: test_data
+save_predictions: true
+output_dir: output
