@@ -1,4 +1,3 @@
-import argparse
 import logging
 from pathlib import Path
 
@@ -7,6 +6,7 @@ from datasets.xml_loader import load_dataset
 from inference.predictor import Predictor
 from metrics.evaluator import Evaluator
 from log_setup import setup_logging
+import argparse
 
 
 def parse_args() -> argparse.Namespace:

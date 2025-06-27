@@ -1,0 +1,40 @@
+diff --git a/src/cli.py b/src/cli.py
+index 638bd9d9458bc7e62361d17e605edbf6508fe45c..18d7781c0964c1a713adf5318d473721e580370a 100644
+--- a/src/cli.py
++++ b/src/cli.py
+@@ -1,34 +1,34 @@
+-import argparse
+ import logging
+ from pathlib import Path
+
+ from config import Config
+ from datasets.xml_loader import load_dataset
+ from inference.predictor import Predictor
+ from metrics.evaluator import Evaluator
+ from log_setup import setup_logging
++import argparse
+
+
+ def parse_args() -> argparse.Namespace:
+     parser = argparse.ArgumentParser(description="YOLOv8 evaluation CLI")
+     parser.add_argument("--config", help="Path to config YAML", default=None)
+     parser.add_argument("--model", help="Model weights", default=None)
+     parser.add_argument("--data", help="Dataset directory", default=None)
+     parser.add_argument("--output", help="Output directory", default=None)
+     parser.add_argument("--no-save", action="store_true", help="Do not save predictions")
+     parser.add_argument("--log-dir", help="Directory for logs", default="logs")
+     return parser.parse_args()
+
+
+ def main() -> None:
+     args = parse_args()
+     setup_logging(args.log_dir)
+     cfg = Config.from_file(args.config)
+     if args.model:
+         cfg.model_path = args.model
+     if args.data:
+         cfg.data_dir = args.data
+     if args.output:
+         cfg.output_dir = args.output
+     if args.no_save:
+         cfg.save_predictions = False
