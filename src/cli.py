@@ -1,5 +1,6 @@
 import logging
 from pathlib import Path
+import sys
 
 from config import Config
 from datasets.xml_loader import load_dataset
@@ -7,6 +8,11 @@ from inference.predictor import Predictor
 from metrics.evaluator import Evaluator
 from log_setup import setup_logging
 import argparse
+
+try:  # optional dependency
+    from tqdm import tqdm  # type: ignore
+except Exception:  # pragma: no cover - tqdm may not be installed
+    tqdm = None  # type: ignore
 
 
 def parse_args() -> argparse.Namespace:
@@ -17,6 +23,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--output", help="Output directory", default=None)
     parser.add_argument("--no-save", action="store_true", help="Do not save predictions")
     parser.add_argument("--log-dir", help="Directory for logs", default="logs")
+    parser.add_argument(
+        "--progress",
+        action="store_true",
+        help="Show progress bar while running predictions",
+    )
     return parser.parse_args()
 
 
@@ -38,7 +49,23 @@ def main() -> None:
     predictor = Predictor(cfg.model_path, cfg.confidence_threshold)
 
     predictions = {}
-    for ann in annotations:
+
+    iterable = annotations
+    if args.progress:
+        if tqdm is not None:
+            iterable = tqdm(annotations, desc="Predicting", unit="img")
+        else:
+            total = len(annotations)
+
+            def _simple_progress(items: list) -> "list":
+                for idx, item in enumerate(items, 1):
+                    print(f"{idx}/{total}", end="\r", file=sys.stderr)
+                    yield item
+                print(file=sys.stderr)
+
+            iterable = _simple_progress(annotations)
+
+    for ann in iterable:
         boxes = predictor.predict(ann.image_path)
         predictions[ann.image_path] = boxes
 

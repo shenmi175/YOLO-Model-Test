@@ -6,13 +6,14 @@ from pathlib import Path
 def test_cli_end_to_end(tmp_path: Path) -> None:
     out_dir = tmp_path / "out"
     log_dir = tmp_path / "logs"
+    root = Path(__file__).resolve().parents[1]
     cmd = [
         sys.executable,
-        str(Path('src') / 'cli.py'),
-        '--model', 'models/best.pt',
-        '--data', 'test_data',
+        str(root / 'src' / 'cli.py'),
+        '--model', str(root / 'models' / 'best.pt'),
+        '--data', str(root / 'test_data'),
         '--output', str(out_dir),
-        '--log-dir', str(log_dir)
+        '--log-dir', str(log_dir),
     ]
     result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
     assert result.returncode == 0

@@ -20,3 +20,4 @@ def test_evaluator_metrics():
     assert result.precision == 1.0
     assert result.recall == 1.0
     assert result.f1 == 1.0
+    assert result.map50 == 1.0

@@ -43,8 +43,11 @@ class Evaluator:
 
     def evaluate(self, annotations: List[Annotation], predictions: Dict[str, List[Box]]) -> EvalResult:
         tp = fp = fn = 0
+        pred_matches: List[int] = []
+        total_gt = 0
         for ann in annotations:
             gts = ann.boxes
+            total_gt += len(gts)
             preds = predictions.get(ann.image_path, [])
             matched_gt: set[int] = set()
             for pred in preds:
@@ -58,14 +61,31 @@ class Evaluator:
                 if best_j >= 0 and best_j not in matched_gt:
                     tp += 1
                     matched_gt.add(best_j)
+                    pred_matches.append(1)
                 else:
                     fp += 1
+                    pred_matches.append(0)
             fn += len(gts) - len(matched_gt)
 
         precision = tp / (tp + fp) if tp + fp else 0.0
         recall = tp / (tp + fn) if tp + fn else 0.0
         f1 = 2 * precision * recall / (precision + recall) if precision + recall else 0.0
-        map50 = precision  # simple stand-in for example purposes
+
+        # compute simple mAP@0.5 from accumulated detections
+        ap = 0.0
+        if total_gt:
+            tp_cum = fp_cum = 0
+            recall_prev = 0.0
+            for m in pred_matches:
+                if m:
+                    tp_cum += 1
+                else:
+                    fp_cum += 1
+                recall_cur = tp_cum / total_gt
+                prec_cur = tp_cum / (tp_cum + fp_cum)
+                ap += (recall_cur - recall_prev) * prec_cur
+                recall_prev = recall_cur
+        map50 = ap
 
         confusion = [[tp, fp], [fn, 0]]
         conf_prob = []
