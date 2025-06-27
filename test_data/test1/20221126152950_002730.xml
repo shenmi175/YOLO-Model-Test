@@ -1,0 +1,2 @@
+<?xml version='1.0' encoding='utf-8'?>
+<annotation><folder>20221126152950</folder><filename>20221126152950_002730.jpg</filename><path>G:\A_Share\datas\2_3_4_5m\2_3_4m\1m\xrw111_1m\day\20221126152950\20221126152950_002730.jpg</path><source><database>Unknown</database></source><size><width>1920</width><height>1080</height><depth>3</depth></size><segmented>0</segmented><object><name>person</name><pose>Unspecified</pose><truncated>0</truncated><difficult>0</difficult><bndbox><xmin>741</xmin><ymin>1</ymin><xmax>1115</xmax><ymax>684</ymax></bndbox></object></annotation>
