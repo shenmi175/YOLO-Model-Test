@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+# YOLO-Model-Test
+>>>>>>> 9c854a0867064d5eb8e09f40949cd0c3940dd8cf
 验证模型在测试集上的效果.
 
 有测试图片和xml文件以及训练好的yolov8模型。
@@ -12,6 +16,13 @@
 
 4，使用进度条
 
+<<<<<<< HEAD
+=======
+
+
+
+
+>>>>>>> 9c854a0867064d5eb8e09f40949cd0c3940dd8cf
 ```python
 YOLO-Model-Test/
 ├── README.md
@@ -53,6 +64,7 @@ YOLO-Model-Test/
     ├── test_dataset.py
     ├── test_predictor.py
     └── test_evaluator.py
+<<<<<<< HEAD
 ```
 
 
@@ -86,3 +98,17 @@ GUI：ui/gui.py 提供参数选择界面和进度条，对 predictor 与 evaluat
    `src/cli.py` 或 `src/ui/gui.py` 可以作为统一入口，允许用户选择模型、数据集和输出目录。根据需要还能加入日志功能（`src/log_setup.py`）。
 5. **补充单元测试**
    仿照 `tests/` 目录的规划，为数据加载、模型推理和评估模块编写基础测试，确保后续修改不会破坏现有功能。
+=======
+
+```
+
+**模块说明**
+
+- **CLI 与配置管理**：`cli.py` 结合 `config.py` 读取 `configs/default.yaml`，支持在命令行执行推理、输出指标或批量保存预测图像。
+- **日志与报告**：`log_setup.py` 初始化日志系统，并在测试结束后导出 Markdown/HTML 报告，可记录每个模型及数据集的表现。
+- **数据集处理**：`dataset/xml_loader.py` 负责加载图片与标注，`dataset_stats.py` 计算类别分布、标注框尺寸等统计信息。
+- **推理与评估**：`predictor.py` 使用指定模型权重对图片推理。`metrics/evaluator.py` 计算多种指标并生成混淆矩阵；必要时可在 `metrics/confusion.py` 实现可视化。
+- **模型管理**：`model_manager/loader.py` 方便在多个模型间切换或记录版本信息。
+- **GUI**：`ui/gui.py` 提供参数选择界面和进度条，对 `predictor` 与 `evaluator` 封装。
+- **单元测试与 CI**：`tests/` 编写覆盖数据加载、推理、评估等功能的测试脚本，可与持续集成工具（如 GitHub Actions）结合，保证更新的稳定性。
+>>>>>>> 9c854a0867064d5eb8e09f40949cd0c3940dd8cf
