@@ -4,10 +4,4 @@
     <option name="sdkName" value="ultralytics" />
   </component>
   <component name="ProjectRootManager" version="2" project-jdk-name="ultralytics" project-jdk-type="Python SDK" />
-<<<<<<< HEAD
-  <component name="PythonCompatibilityInspectionAdvertiser">
-    <option name="version" value="3" />
-  </component>
-=======
->>>>>>> 9c854a0867064d5eb8e09f40949cd0c3940dd8cf
 </project>
