@@ -2,19 +2,19 @@
 
 from __future__ import annotations
 
+
 import logging
-import sys
 import threading
 from pathlib import Path
 import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 
-from config import Config
-from datasets.xml_loader import load_dataset, Annotation
-from inference.predictor import Predictor
-from metrics.evaluator import Evaluator
-from metrics.confusion import plot_confusion_matrix
-from log_setup import setup_logging
+from src.config import Config
+from src.datasets.xml_loader import load_dataset, Annotation
+from src.inference.predictor import Predictor
+from src.metrics.evaluator import Evaluator
+from src.metrics.confusion import plot_confusion_matrix
+from src.log_setup import setup_logging
 
 
 def run_evaluation(
@@ -22,14 +22,20 @@ def run_evaluation(
     data_dir: str,
     output_dir: str,
     save_predictions: bool,
+    save_images: bool = False,
     progress_cb: callable | None = None,
 ) -> None:
     """Run evaluation, reporting progress via ``progress_cb``."""
     cfg = Config.from_file(None)
-    cfg.model_path = model_path
-    cfg.data_dir = data_dir
-    cfg.output_dir = output_dir
+    repo_root = Path(__file__).resolve().parents[1]
+
+    cfg.model_path = str((repo_root / model_path).resolve()) if not Path(model_path).is_absolute() else model_path
+    cfg.data_dir = str((repo_root / data_dir).resolve()) if not Path(data_dir).is_absolute() else data_dir
+    cfg.output_dir = str((repo_root / output_dir).resolve()) if not Path(output_dir).is_absolute() else output_dir
+
     cfg.save_predictions = save_predictions
+    cfg.save_images = save_images
+
 
     out_root = Path(cfg.output_dir)
     data_name = Path(cfg.data_dir).name
@@ -100,6 +106,23 @@ def run_evaluation(
                 fh.write(f"{img} {b_str}\n")
         logging.info("Predictions saved to %s", pred_file)
 
+    if cfg.save_images:
+        try:
+            from PIL import Image, ImageDraw
+        except Exception as exc:  # pragma: no cover - PIL optional
+            logging.error("Saving images failed: %s", exc)
+        else:
+            img_dir = run_dir / "images"
+            img_dir.mkdir(parents=True, exist_ok=True)
+            for img_path, boxes in predictions.items():
+                img = Image.open(img_path).convert("RGB")
+                draw = ImageDraw.Draw(img)
+                for b in boxes:
+                    draw.rectangle([b.xmin, b.ymin, b.xmax, b.ymax], outline="red", width=2)
+                    draw.text((b.xmin, b.ymin), b.label, fill="red")
+                out_path = img_dir / Path(img_path).name
+                img.save(out_path)
+            logging.info("Images saved to %s", img_dir)
 
 def launch() -> None:
     """Launch the parameter selection window."""
@@ -130,8 +153,11 @@ def launch() -> None:
     save_var = tk.BooleanVar(value=False)
     tk.Checkbutton(root, text="Save predictions", variable=save_var).grid(row=3, columnspan=3)
 
+    image_var = tk.BooleanVar(value=False)
+    tk.Checkbutton(root, text="Save images", variable=image_var).grid(row=4, columnspan=3)
+
     progress = ttk.Progressbar(root, orient="horizontal", length=300, mode="determinate")
-    progress.grid(row=4, columnspan=3, pady=5)
+    progress.grid(row=5, columnspan=3, pady=5)
 
     def update_progress(current: int, total: int) -> None:
         progress["maximum"] = total
@@ -146,6 +172,7 @@ def launch() -> None:
                     data_var.get(),
                     out_var.get(),
                     save_var.get(),
+                    image_var.get(),
                     update_progress,
                 )
                 messagebox.showinfo("YOLO Model Test", "Evaluation complete")
@@ -154,7 +181,7 @@ def launch() -> None:
 
         threading.Thread(target=_worker, daemon=True).start()
 
-    tk.Button(root, text="Run", command=run).grid(row=5, columnspan=3, pady=5)
+    tk.Button(root, text="Run", command=run).grid(row=6, columnspan=3, pady=5)
     root.mainloop()
 
 

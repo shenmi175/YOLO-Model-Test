@@ -4,3 +4,4 @@ iou_threshold: 0.45
 data_dir: test_data
 save_predictions: true
 output_dir: output
+save_images: false

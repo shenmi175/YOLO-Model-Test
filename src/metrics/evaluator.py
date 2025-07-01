@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Dict, List
 
-from datasets.xml_loader import Annotation, Box
+from src.datasets.xml_loader import Annotation, Box
 
 
 def iou(box1: Box, box2: Box) -> float:

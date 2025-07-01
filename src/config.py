@@ -55,6 +55,7 @@ class Config:
     iou_threshold: float = 0.45
     data_dir: str = "test_data"
     save_predictions: bool = True
+    save_images: bool = False
     output_dir: str = "output"
 
     @classmethod

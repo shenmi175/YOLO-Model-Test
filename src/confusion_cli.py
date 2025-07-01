@@ -2,6 +2,7 @@ import argparse
 import logging
 from pathlib import Path
 
+
 from config import Config
 from datasets.xml_loader import load_dataset
 from inference.predictor import Predictor

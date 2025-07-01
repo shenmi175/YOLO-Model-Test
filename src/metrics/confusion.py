@@ -5,6 +5,8 @@ from __future__ import annotations
 from typing import Iterable, List, Sequence
 
 try:
+    import matplotlib
+    matplotlib.use("Agg")  # use a non-GUI backend to avoid warnings
     import matplotlib.pyplot as plt  # type: ignore
     import numpy as np  # type: ignore
 except Exception:  # pragma: no cover - optional deps
@@ -47,3 +49,4 @@ def plot_confusion_matrix(
         fig.savefig(save_path)
     else:
         plt.show()
+    plt.close(fig)

@@ -28,6 +28,9 @@ def stats_from_dir(root_dir: str) -> Dict[str, object]:
 
 try:
     import matplotlib.pyplot as plt  # type: ignore
+    import matplotlib
+
+    matplotlib.use("Agg")
 except Exception:  # pragma: no cover - matplotlib optional
     plt = None  # type: ignore
 
@@ -50,3 +53,4 @@ def plot_class_distribution(stats: Dict[str, object], save_path: str | None = No
         fig.savefig(save_path)
     else:
         plt.show()
+    plt.close(fig)
