@@ -1,0 +1,2 @@
+G:\A_Share\YOLO-Model-Test\test_data\test1\20221126152950_002730.jpg person,741,1,1115,684
+G:\A_Share\YOLO-Model-Test\test_data\test2\22112604_002940.jpg person,794,2,1245,789 face,373,274,425,336 person,0,125,179,740

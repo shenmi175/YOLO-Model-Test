@@ -5,10 +5,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="757978fc-c7d2-4851-a074-3aa64ec6cd9e" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/replace_code.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/test_cli.py.bak" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/copy_files/README.md.bak" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/copy_files/src/config.py.bak" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/copy_files/src/log_setup.py.bak" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/output/confusion_matrix.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/output/confusion_probability.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/output/predictions.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/confusion_cli.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/logs/log_20250701_113435.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/logs/log_20250701_114021.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/logs/log_20250701_145944.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/test_confusion_cli.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/change.patch" beforeDir="false" afterPath="$PROJECT_DIR$/change.patch" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/log_setup.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/log_setup.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,29 +58,56 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python tests.Python tests for test_full_pipeline.test_cli_end_to_end.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_gui.test_gui_import.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests in test_full_pipeline.py.executor&quot;: &quot;Run&quot;,
-    &quot;Python.replace_code.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;G:/A_Share/YOLO-Model-Test&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "Python tests.Python tests for test_confusion_cli.test_confusion_cli.executor": "Run",
+    "Python tests.Python tests for test_end_to_end.test_cli_end_to_end.executor": "Run",
+    "Python tests.Python tests for test_full_pipeline.test_cli_end_to_end.executor": "Run",
+    "Python tests.Python tests for test_gui.test_gui_import.executor": "Run",
+    "Python tests.Python tests in test_full_pipeline.py.executor": "Run",
+    "Python.confusion_cli.executor": "Run",
+    "Python.replace_code.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "G:/A_Share/YOLO-Model-Test",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="G:\A_Share\YOLO-Model-Test\tests" />
     </key>
   </component>
   <component name="RunManager" selected="Python.replace_code">
+    <configuration name="confusion_cli" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="YOLO-Model-Test" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/confusion_cli.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="replace_code" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="YOLO-Model-Test" />
       <option name="ENV_FILES" value="" />
@@ -94,6 +131,38 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="Python tests for test_confusion_cli.test_confusion_cli" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="YOLO-Model-Test" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;test_confusion_cli.test_confusion_cli&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Python tests for test_end_to_end.test_cli_end_to_end" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="YOLO-Model-Test" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;test_end_to_end.test_cli_end_to_end&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
     <configuration name="Python tests for test_full_pipeline.test_cli_end_to_end" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
       <module name="YOLO-Model-Test" />
       <option name="ENV_FILES" value="" />
@@ -108,38 +177,6 @@
       <option name="_new_additionalArguments" value="&quot;&quot;" />
       <option name="_new_target" value="&quot;test_full_pipeline.test_cli_end_to_end&quot;" />
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
-      <method v="2" />
-    </configuration>
-    <configuration name="Python tests for test_gui.test_gui_import" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
-      <module name="YOLO-Model-Test" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;test_gui.test_gui_import&quot;" />
-      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
-      <method v="2" />
-    </configuration>
-    <configuration name="Python tests in test_full_pipeline.py" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
-      <module name="YOLO-Model-Test" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;$PROJECT_DIR$/tests/test_full_pipeline.py&quot;" />
-      <option name="_new_targetType" value="&quot;PATH&quot;" />
       <method v="2" />
     </configuration>
     <configuration name="pytest in tests" type="tests" factoryName="py.test" nameIsGenerated="true">
@@ -162,18 +199,20 @@
       <method v="2" />
     </configuration>
     <list>
+      <item itemvalue="Python.confusion_cli" />
       <item itemvalue="Python.replace_code" />
       <item itemvalue="Python tests.pytest in tests" />
+      <item itemvalue="Python tests.Python tests for test_confusion_cli.test_confusion_cli" />
+      <item itemvalue="Python tests.Python tests for test_end_to_end.test_cli_end_to_end" />
       <item itemvalue="Python tests.Python tests for test_full_pipeline.test_cli_end_to_end" />
-      <item itemvalue="Python tests.Python tests for test_gui.test_gui_import" />
-      <item itemvalue="Python tests.Python tests in test_full_pipeline.py" />
     </list>
     <recent_temporary>
       <list>
         <item itemvalue="Python.replace_code" />
+        <item itemvalue="Python tests.Python tests for test_confusion_cli.test_confusion_cli" />
+        <item itemvalue="Python.confusion_cli" />
+        <item itemvalue="Python tests.Python tests for test_end_to_end.test_cli_end_to_end" />
         <item itemvalue="Python tests.Python tests for test_full_pipeline.test_cli_end_to_end" />
-        <item itemvalue="Python tests.Python tests for test_gui.test_gui_import" />
-        <item itemvalue="Python tests.Python tests in test_full_pipeline.py" />
       </list>
     </recent_temporary>
   </component>
@@ -195,7 +234,7 @@
       <updated>1751010007857</updated>
       <workItem from="1751010008951" duration="10653000" />
       <workItem from="1751265477723" duration="924000" />
-      <workItem from="1751267215879" duration="1784000" />
+      <workItem from="1751267215879" duration="7611000" />
     </task>
     <servers />
   </component>
@@ -205,8 +244,12 @@
   <component name="UnknownFeatures">
     <option featureType="com.intellij.fileTypeFactory" implementationName="*.bat" />
   </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+  </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/YOLO_Model_Test$replace_code.coverage" NAME="replace_code Coverage Results" MODIFIED="1751249022496" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/YOLO_Model_Test$.coverage" NAME=" Coverage Results" MODIFIED="1751016762958" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/YOLO_Model_Test$confusion_cli.coverage" NAME="confusion_cli Coverage Results" MODIFIED="1751353177001" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
+    <SUITE FILE_PATH="coverage/YOLO_Model_Test$replace_code.coverage" NAME="replace_code Coverage Results" MODIFIED="1751354948193" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/YOLO_Model_Test$.coverage" NAME=" Coverage Results" MODIFIED="1751354265140" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
   </component>
 </project>
