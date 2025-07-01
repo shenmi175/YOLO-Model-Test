@@ -1,8 +1,0 @@
-2025-07-01 14:59:44,808 [INFO] Loading dataset from G:\A_Share\YOLO-Model-Test\test_data
-2025-07-01 14:59:48,856 [INFO] Precision: 0.750
-2025-07-01 14:59:48,856 [INFO] Recall: 0.750
-2025-07-01 14:59:48,856 [INFO] F1: 0.750
-2025-07-01 14:59:48,856 [INFO] mAP50: 0.750
-2025-07-01 14:59:48,857 [INFO] Predictions saved to G:\A_Share\YOLO-Model-Test\output\predictions.txt
-2025-07-01 14:59:50,870 [INFO] Confusion matrix saved to G:\A_Share\YOLO-Model-Test\output\confusion_matrix.png
-2025-07-01 14:59:50,871 [INFO] Confusion probability matrix saved to G:\A_Share\YOLO-Model-Test\output\confusion_probability.png

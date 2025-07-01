@@ -32,6 +32,7 @@ class EvalResult:
     map50: float
     confusion_matrix: List[List[int]]
     confusion_prob: List[List[float]]
+    labels: List[str]
     tp: int
     fp: int
     fn: int
@@ -45,27 +46,54 @@ class Evaluator:
         tp = fp = fn = 0
         pred_matches: List[int] = []
         total_gt = 0
+
+        label_set = {b.label for ann in annotations for b in ann.boxes}
+        for boxes in predictions.values():
+            for b in boxes:
+                label_set.add(b.label)
+        labels = sorted(label_set)
+        labels.append("background")
+        bg_idx = len(labels) - 1
+        idx = {l: i for i, l in enumerate(labels)}
+
+        confusion = [[0 for _ in labels] for _ in labels]
+
         for ann in annotations:
             gts = ann.boxes
             total_gt += len(gts)
             preds = predictions.get(ann.image_path, [])
             matched_gt: set[int] = set()
-            for pred in preds:
-                best_iou = 0.0
+            pred_used: set[int] = set()
+
+            for i, pred in enumerate(preds):
+                best_i = 0.0
                 best_j = -1
                 for j, gt in enumerate(gts):
-                    i = iou(pred, gt)
-                    if i >= self.iou_threshold and i > best_iou:
-                        best_iou = i
+                    if j in matched_gt:
+                        continue
+                    iv = iou(pred, gt)
+                    if iv >= self.iou_threshold and iv > best_i:
+                        best_i = iv
                         best_j = j
-                if best_j >= 0 and best_j not in matched_gt:
-                    tp += 1
+                if best_j >= 0:
                     matched_gt.add(best_j)
+                    pred_used.add(i)
+                    tp += 1
                     pred_matches.append(1)
+                    p_idx = idx.get(pred.label, bg_idx)
+                    g_idx = idx.get(gts[best_j].label, bg_idx)
+                    confusion[p_idx][g_idx] += 1
                 else:
                     fp += 1
                     pred_matches.append(0)
-            fn += len(gts) - len(matched_gt)
+                    p_idx = idx.get(pred.label, bg_idx)
+                    confusion[p_idx][bg_idx] += 1
+
+            for j, gt in enumerate(gts):
+                if j not in matched_gt:
+                    fn += 1
+                    g_idx = idx.get(gt.label, bg_idx)
+                    confusion[bg_idx][g_idx] += 1
 
         precision = tp / (tp + fp) if tp + fp else 0.0
         recall = tp / (tp + fn) if tp + fn else 0.0
@@ -87,8 +115,7 @@ class Evaluator:
                 recall_prev = recall_cur
         map50 = ap
 
-        confusion = [[tp, fp], [fn, 0]]
-        conf_prob = []
+        conf_prob: List[List[float]] = []
         for row in confusion:
             s = sum(row)
             conf_prob.append([c / s if s else 0.0 for c in row])
@@ -100,6 +127,7 @@ class Evaluator:
             map50=map50,
             confusion_matrix=confusion,
             confusion_prob=conf_prob,
+            labels=labels,
             tp=tp,
             fp=fp,
             fn=fn,

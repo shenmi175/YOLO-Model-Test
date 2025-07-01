@@ -85,7 +85,7 @@ def main() -> None:
             res.f1,
             res.map50,
         )
-        labels = ["positive", "negative"]
+        labels = res.labels
         sub_dir = run_dir / name if name != "overall" else run_dir
         sub_dir.mkdir(parents=True, exist_ok=True)
         cm_path = sub_dir / "confusion_matrix.png"
