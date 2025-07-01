@@ -27,6 +27,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--data", help="Dataset directory", default=None)
     parser.add_argument("--output", help="Output directory", default=None)
     parser.add_argument("--save-images", action="store_true", help="Save annotated images")
+    parser.add_argument("--img-dir", help="Directory for saved images", default=None)
     parser.add_argument("--no-save", action="store_true", help="Do not save prediction txt")
     parser.add_argument("--gui", action="store_true", help="Launch GUI for parameter selection")
     return parser.parse_args()
@@ -48,6 +49,7 @@ def main() -> None:
         cfg.save_predictions = False
     if args.save_images:
         cfg.save_images = True
+    img_dir = args.img_dir
 
     gui.run_evaluation(
         cfg.model_path,
@@ -55,6 +57,8 @@ def main() -> None:
         cfg.output_dir,
         cfg.save_predictions,
         cfg.save_images,
+        None,
+        img_dir,
     )
 
 

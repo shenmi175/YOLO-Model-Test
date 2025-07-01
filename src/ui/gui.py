@@ -24,10 +24,22 @@ def run_evaluation(
     save_predictions: bool,
     save_images: bool = False,
     progress_cb: callable | None = None,
-) -> None:
+        image_output_dir: str | None = None,
+) -> tuple[Path, Path | None]:
+    """Run evaluation, reporting progress via ``progress_cb``.
+
+    Returns the run directory and the directory where annotated images were
+    stored (``None`` if images were not saved)."""
     """Run evaluation, reporting progress via ``progress_cb``."""
     cfg = Config.from_file(None)
-    repo_root = Path(__file__).resolve().parents[1]
+    # ``gui.py`` lives under ``src/ui`` so we need to go two levels up to reach
+    # the repository root where the ``models`` and ``test_data`` directories
+    # reside. Previously this used ``parents[1]`` which resolved to the ``src``
+    # directory, causing all relative paths to incorrectly point inside ``src``.
+    # Using ``parents[2]`` ensures we always resolve paths relative to the
+    # project root.
+    repo_root = Path(__file__).resolve().parents[2]
+    # repo_root = Path(__file__).resolve().parents[1]
 
     cfg.model_path = str((repo_root / model_path).resolve()) if not Path(model_path).is_absolute() else model_path
     cfg.data_dir = str((repo_root / data_dir).resolve()) if not Path(data_dir).is_absolute() else data_dir
@@ -44,6 +56,7 @@ def run_evaluation(
         idx += 1
     run_dir = out_root / f"{data_name}{idx}"
     run_dir.mkdir(parents=True, exist_ok=True)
+    img_dir_path: Path | None = None
 
     log_file = run_dir / "run.log"
     setup_logging(str(log_file))
@@ -73,7 +86,7 @@ def run_evaluation(
             res.f1,
             res.map50,
         )
-        labels = ["positive", "negative"]
+        labels = res.labels
         sub_dir = run_dir / name if name != "overall" else run_dir
         sub_dir.mkdir(parents=True, exist_ok=True)
         cm_path = sub_dir / "confusion_matrix.png"
@@ -112,7 +125,9 @@ def run_evaluation(
         except Exception as exc:  # pragma: no cover - PIL optional
             logging.error("Saving images failed: %s", exc)
         else:
-            img_dir = run_dir / "images"
+            img_dir = Path(image_output_dir) if image_output_dir else run_dir / "images"
+            if not img_dir.is_absolute():
+                img_dir = repo_root / img_dir
             img_dir.mkdir(parents=True, exist_ok=True)
             for img_path, boxes in predictions.items():
                 img = Image.open(img_path).convert("RGB")
@@ -123,6 +138,9 @@ def run_evaluation(
                 out_path = img_dir / Path(img_path).name
                 img.save(out_path)
             logging.info("Images saved to %s", img_dir)
+            img_dir_path = img_dir
+
+    return run_dir, img_dir_path
 
 def launch() -> None:
     """Launch the parameter selection window."""
@@ -156,8 +174,15 @@ def launch() -> None:
     image_var = tk.BooleanVar(value=False)
     tk.Checkbutton(root, text="Save images", variable=image_var).grid(row=4, columnspan=3)
 
+    tk.Label(root, text="Image output dir:").grid(row=5, column=0, sticky="e")
+    img_out_var = tk.StringVar()
+    tk.Entry(root, textvariable=img_out_var, width=40).grid(row=5, column=1)
+    tk.Button(root, text="Browse", command=lambda: img_out_var.set(
+        filedialog.askdirectory(initialdir="output")
+    )).grid(row=5, column=2)
+
     progress = ttk.Progressbar(root, orient="horizontal", length=300, mode="determinate")
-    progress.grid(row=5, columnspan=3, pady=5)
+    progress.grid(row=6, columnspan=3, pady=5)
 
     def update_progress(current: int, total: int) -> None:
         progress["maximum"] = total
@@ -167,21 +192,25 @@ def launch() -> None:
     def run() -> None:
         def _worker() -> None:
             try:
-                run_evaluation(
+                run_dir, img_dir = run_evaluation(
                     model_var.get(),
                     data_var.get(),
                     out_var.get(),
                     save_var.get(),
                     image_var.get(),
                     update_progress,
+                    img_out_var.get() or None,
                 )
-                messagebox.showinfo("YOLO Model Test", "Evaluation complete")
+                msg = "Evaluation complete"
+                if img_dir:
+                    msg += f"\nImages saved to: {img_dir}"
+                messagebox.showinfo("YOLO Model Test", msg)
             except Exception as exc:  # pragma: no cover - UI errors
                 messagebox.showerror("YOLO Model Test", str(exc))
 
         threading.Thread(target=_worker, daemon=True).start()
 
-    tk.Button(root, text="Run", command=run).grid(row=6, columnspan=3, pady=5)
+    tk.Button(root, text="Run", command=run).grid(row=7, columnspan=3, pady=5)
     root.mainloop()
 
 
