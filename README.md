@@ -9,9 +9,10 @@
 
 2，可供选择是否需要保存预测后带有标注框的图片，放入到指定目录下。文件夹命名与结构和测试数据集相同
 
-3，创建GUI界面以选择参数
+3，创建GUI界面以选择参数，可浏览 ``models`` 目录下的 ``.pt`` 或 ``.onnx`` 模型，
+   并选择数据集根目录
 
-4，使用进度条
+4，使用进度条显示推理进度
 
 ```python
 YOLO-Model-Test/
@@ -68,7 +69,7 @@ YOLO-Model-Test/
 - **数据集处理**：`dataset/xml_loader.py` 负责加载图片与标注，`dataset_stats.py` 计算类别分布、标注框尺寸等统计信息。
 - **推理与评估**：`predictor.py` 使用指定模型权重对图片推理。`metrics/evaluator.py` 计算多种指标并生成混淆矩阵；必要时可在 `metrics/confusion.py` 实现可视化。
 - **模型管理**：`model_manager/loader.py` 方便在多个模型间切换或记录版本信息。
-- **GUI**：`ui/gui.py` 提供参数选择界面和进度条，对 `predictor` 与 `evaluator` 封装。
+- **GUI**：`ui/gui.py` 提供参数选择界面和进度条，可浏览模型文件和数据集目录，对 `predictor` 与 `evaluator` 封装。
 - **单元测试与 CI**：`tests/` 编写覆盖数据加载、推理、评估等功能的测试脚本，可与持续集成工具（如 GitHub Actions）结合，保证更新的稳定性。
 
 针对“如何开始”：
