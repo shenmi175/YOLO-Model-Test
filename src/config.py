@@ -59,11 +59,19 @@ class Config:
 
     @classmethod
     def from_file(cls, path: str | None = None) -> "Config":
+        """Load configuration and resolve relative paths."""
         if path is None:
             root = os.path.dirname(os.path.dirname(__file__))
             path = os.path.join(root, "configs", "default.yaml")
         data = load_config(path)
-        return cls(**data)
+        cfg = cls(**data)
+
+        repo_root = os.path.dirname(os.path.dirname(__file__))
+        for key in ("model_path", "data_dir", "output_dir"):
+            value = getattr(cfg, key)
+            if not os.path.isabs(value):
+                setattr(cfg, key, os.path.join(repo_root, value))
+        return cfg
 
     def as_dict(self) -> Dict[str, Any]:
         return self.__dict__.copy()

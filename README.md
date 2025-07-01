@@ -62,6 +62,8 @@ YOLO-Model-Test/
 **模块说明**
 
 - **CLI 与配置管理**：`cli.py` 结合 `config.py` 读取 `configs/default.yaml`，支持在命令行执行推理、输出指标或批量保存预测图像。
+- **路径解析**：配置文件中使用的相对路径均以项目根目录为基准，可在任意目录调用脚本。
+- **混淆矩阵脚本**：`confusion_cli.py` 会为数据集下的每个子文件夹及整体数据生成混淆矩阵和概率矩阵，并将图像保存到 `output/数据集N/子文件夹` 结构中，便于查看分类效果。
 - **日志与报告**：`log_setup.py` 初始化日志系统，并在测试结束后导出 Markdown/HTML 报告，可记录每个模型及数据集的表现。
 - **数据集处理**：`dataset/xml_loader.py` 负责加载图片与标注，`dataset_stats.py` 计算类别分布、标注框尺寸等统计信息。
 - **推理与评估**：`predictor.py` 使用指定模型权重对图片推理。`metrics/evaluator.py` 计算多种指标并生成混淆矩阵；必要时可在 `metrics/confusion.py` 实现可视化。
@@ -78,7 +80,9 @@ YOLO-Model-Test/
 3. **构建推理和评估流程**  
    - 在 `src/inference/predictor.py` 调用 YOLOv8 模型，对输入图片进行推理。  
    - 在 `src/metrics/evaluator.py` 计算混淆矩阵、Precision/Recall/F1、mAP 等指标，并按 README 所述生成混淆概率矩阵等可视化结果。
-4. **提供命令行或 GUI 入口**  
+4. **提供命令行或 GUI 入口**
    `src/cli.py` 或 `src/ui/gui.py` 可以作为统一入口，允许用户选择模型、数据集和输出目录。根据需要还能加入日志功能（`src/log_setup.py`）。
-5. **补充单元测试**  
+5. **补充单元测试**
    仿照 `tests/` 目录的规划，为数据加载、模型推理和评估模块编写基础测试，确保后续修改不会破坏现有功能。
+6. **生成混淆矩阵**
+   使用 `python src/confusion_cli.py --model models/best.pt --data test_data --output output` 运行，结果会写入 `output/test_data1/`（下次运行为 `test_data2/` 等），其中包含每个子文件夹和整体数据的混淆矩阵及概率矩阵图像。
