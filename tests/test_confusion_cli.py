@@ -7,13 +7,17 @@ import pytest
 
 @pytest.mark.skipif(importlib.util.find_spec('matplotlib') is None, reason='requires matplotlib')
 def test_confusion_cli(tmp_path: Path) -> None:
+    root = Path(__file__).resolve().parents[1]
     out_root = tmp_path / "out"
     cmd = [
         sys.executable,
-        str(Path('src') / 'confusion_cli.py'),
-        '--model', 'models/best.pt',
-        '--data', 'test_data',
-        '--output', str(out_root),
+        str(root / "src" / "confusion_cli.py"),
+        "--model",
+        str(root / "models" / "best.pt"),
+        "--data",
+        str(root / "test_data"),
+        "--output",
+        str(out_root),
     ]
     result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
     assert result.returncode == 0

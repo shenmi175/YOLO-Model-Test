@@ -35,8 +35,8 @@ def plot_confusion_matrix(
     ax.set_yticks(range(len(labels)))
     ax.set_xticklabels(labels)
     ax.set_yticklabels(labels)
-    ax.set_xlabel("Predicted")
-    ax.set_ylabel("True")
+    ax.set_xlabel("True")
+    ax.set_ylabel("Predicted")
 
     for i in range(arr.shape[0]):
         for j in range(arr.shape[1]):
