@@ -1,3 +1,8 @@
+
+
+
+
+
 diff --git a/tests/test_cli.py b/tests/test_cli.py
 index e9efafeb5796a1a2b91262929e252ea23f3761db..32497d7365518f0ccf45f86cf414be86e9fa8b83 100644
 --- a/tests/test_cli.py
@@ -30,8 +35,3 @@ index e9efafeb5796a1a2b91262929e252ea23f3761db..32497d7365518f0ccf45f86cf414be86
      assert result.returncode == 0
 -    assert "Precision:" in result.stdout
 +    assert "Precision:" in result.stdout
-
-
-
-
-
