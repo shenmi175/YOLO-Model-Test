@@ -92,17 +92,17 @@ def load_dataset(root_dir: str) -> List[Annotation]:
             annotations.append(ann)
             seen_images.add(os.path.abspath(img_path))
 
-            # Then check for images that are missing annotations
-            for dirpath, _, filenames in os.walk(root_dir):
-                for name in filenames:
-                    if name.lower().endswith((".jpg", ".jpeg", ".png")):
-                        img_path = os.path.join(dirpath, name)
-                        if os.path.abspath(img_path) not in seen_images:
-                            xml_path = os.path.splitext(img_path)[0] + ".xml"
-                            if os.path.abspath(xml_path) not in xml_files and not os.path.exists(xml_path):
-                                errors.append(f"Missing annotation for {img_path}")
+    # Then check for images that are missing annotations
+    for dirpath, _, filenames in os.walk(root_dir):
+        for name in filenames:
+            if name.lower().endswith((".jpg", ".jpeg", ".png")):
+                img_path = os.path.join(dirpath, name)
+                if os.path.abspath(img_path) not in seen_images:
+                    xml_path = os.path.splitext(img_path)[0] + ".xml"
+                    if os.path.abspath(xml_path) not in xml_files and not os.path.exists(xml_path):
+                        errors.append(f"Missing annotation for {img_path}")
 
-            if errors:
-                raise DatasetConsistencyError(errors, annotations)
+    if errors:
+        raise DatasetConsistencyError(errors, annotations)
 
-            return annotations
+    return annotations

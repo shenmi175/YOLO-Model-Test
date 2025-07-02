@@ -160,21 +160,21 @@ def launch() -> None:
 
     tk.Label(root, text="Model path:").grid(row=0, column=0, sticky="e")
     model_var = tk.StringVar(value=cfg.model_path)
-    tk.Entry(root, textvariable=model_var, width=40).grid(row=0, column=1)
+    tk.Entry(root, textvariable=model_var, width=60).grid(row=0, column=1)
     tk.Button(root, text="Browse", command=lambda: model_var.set(
         filedialog.askopenfilename(initialdir="models", filetypes=[("Model", "*.pt *.onnx"), ("All", "*.*")])
     )).grid(row=0, column=2)
 
     tk.Label(root, text="Data directory:").grid(row=1, column=0, sticky="e")
     data_var = tk.StringVar(value=cfg.data_dir)
-    tk.Entry(root, textvariable=data_var, width=40).grid(row=1, column=1)
+    tk.Entry(root, textvariable=data_var, width=60).grid(row=1, column=1)
     tk.Button(root, text="Browse", command=lambda: data_var.set(
         filedialog.askdirectory(initialdir="test_data")
     )).grid(row=1, column=2)
 
     tk.Label(root, text="Output directory:").grid(row=2, column=0, sticky="e")
     out_var = tk.StringVar(value=cfg.output_dir)
-    tk.Entry(root, textvariable=out_var, width=40).grid(row=2, column=1)
+    tk.Entry(root, textvariable=out_var, width=60).grid(row=2, column=1)
     tk.Button(root, text="Browse", command=lambda: out_var.set(
         filedialog.askdirectory(initialdir="output")
     )).grid(row=2, column=2)
@@ -187,7 +187,7 @@ def launch() -> None:
 
     tk.Label(root, text="Image output dir:").grid(row=5, column=0, sticky="e")
     img_out_var = tk.StringVar()
-    tk.Entry(root, textvariable=img_out_var, width=40).grid(row=5, column=1)
+    tk.Entry(root, textvariable=img_out_var, width=60).grid(row=5, column=1)
     tk.Button(root, text="Browse", command=lambda: img_out_var.set(
         filedialog.askdirectory(initialdir="output")
     )).grid(row=5, column=2)
