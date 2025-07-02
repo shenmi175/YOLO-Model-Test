@@ -73,7 +73,13 @@ def main() -> None:
         boxes = predictor.predict(ann.image_path)
         predictions[ann.image_path] = boxes
 
-    class_names = list(getattr(predictor.model, "names", [])) if predictor.model is not None else None
+    names_attr = getattr(predictor.model, "names", None) if predictor.model is not None else None
+    if isinstance(names_attr, dict):
+        class_names = list(names_attr.values())
+    elif names_attr is not None:
+        class_names = list(names_attr)
+    else:
+        class_names = None
     evaluator = Evaluator(cfg.iou_threshold, class_names)
 
     result = evaluator.evaluate(annotations, predictions)

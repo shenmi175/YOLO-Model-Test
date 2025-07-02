@@ -30,7 +30,7 @@ def plot_confusion_matrix(
         row_sums[row_sums == 0] = 1
         arr = arr / row_sums
 
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(12, 10))
     cax = ax.matshow(arr, cmap="Blues")
     fig.colorbar(cax)
     ax.set_xticks(range(len(labels)))
@@ -46,7 +46,7 @@ def plot_confusion_matrix(
 
     fig.tight_layout()
     if save_path:
-        fig.savefig(save_path)
+        fig.savefig(save_path, dpi=800)
     else:
         plt.show()
     plt.close(fig)

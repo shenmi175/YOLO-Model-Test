@@ -98,7 +98,7 @@ class Evaluator:
                     fp += 1
                     pred_matches.append(0)
                     p_idx = idx.get(pred.label, bg_idx)
-                    confusion[p_idx][bg_idx] += 1
+                    confusion[bg_idx][p_idx] += 1
 
             for j, gt in enumerate(gts):
                 if j not in matched_gt:
