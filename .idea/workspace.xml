@@ -4,14 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="757978fc-c7d2-4851-a074-3aa64ec6cd9e" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/output/2_3_4m1/confusion_matrix.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/output/2_3_4m1/confusion_probability.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/output/2_3_4m1/predictions.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/datasets/dataset_stats.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/datasets/dataset_stats.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/datasets/xml_loader.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/datasets/xml_loader.py" afterDir="false" />
-    </list>
+    <list default="true" id="757978fc-c7d2-4851-a074-3aa64ec6cd9e" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -241,7 +234,7 @@
       <updated>1751010007857</updated>
       <workItem from="1751010008951" duration="10653000" />
       <workItem from="1751265477723" duration="924000" />
-      <workItem from="1751267215879" duration="33418000" />
+      <workItem from="1751267215879" duration="33991000" />
     </task>
     <servers />
   </component>
