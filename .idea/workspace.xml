@@ -5,10 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="757978fc-c7d2-4851-a074-3aa64ec6cd9e" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/DejaVuSans.ttf" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/gui.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/gui.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/visualization.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/visualization.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -239,7 +236,7 @@
       <updated>1751010007857</updated>
       <workItem from="1751010008951" duration="10653000" />
       <workItem from="1751265477723" duration="924000" />
-      <workItem from="1751267215879" duration="26407000" />
+      <workItem from="1751267215879" duration="28517000" />
     </task>
     <servers />
   </component>
