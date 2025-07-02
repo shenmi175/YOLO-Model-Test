@@ -4,7 +4,7 @@ from pathlib import Path
 
 
 from config import Config
-from datasets.xml_loader import load_dataset
+from datasets.xml_loader import load_dataset, DatasetConsistencyError
 from inference.predictor import Predictor
 from metrics.evaluator import Evaluator
 from metrics.confusion import plot_confusion_matrix
@@ -52,7 +52,11 @@ def main() -> None:
     setup_logging(str(log_file))
 
     logging.info("Loading dataset from %s", cfg.data_dir)
-    annotations = load_dataset(cfg.data_dir)
+    try:
+        annotations = load_dataset(cfg.data_dir)
+    except DatasetConsistencyError as exc:
+        logging.debug("Dataset issue: %s", exc)
+        annotations = exc.annotations
     predictor = Predictor(cfg.model_path, cfg.confidence_threshold)
     predictions = {}
 

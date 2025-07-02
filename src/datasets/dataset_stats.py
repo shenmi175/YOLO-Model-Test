@@ -6,7 +6,8 @@ from collections import Counter
 from typing import Dict, List
 
 from .xml_loader import Annotation, load_dataset
-
+import logging
+from .xml_loader import Annotation, load_dataset, DatasetConsistencyError
 
 def compute_stats(annotations: List[Annotation]) -> Dict[str, object]:
     """Compute simple statistics for a list of ``Annotation`` objects."""
@@ -22,7 +23,12 @@ def compute_stats(annotations: List[Annotation]) -> Dict[str, object]:
 
 def stats_from_dir(root_dir: str) -> Dict[str, object]:
     """Load annotations from ``root_dir`` and compute stats."""
-    annotations = load_dataset(root_dir)
+    try:
+        annotations = load_dataset(root_dir)
+    except DatasetConsistencyError as exc:
+        logging.debug("Dataset issue: %s", exc)
+        annotations = exc.annotations
+
     return compute_stats(annotations)
 
 

@@ -18,9 +18,16 @@ def setup_logging(path: str = "logs") -> logging.Logger:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         log_path = log_path / f"log_{timestamp}.txt"
 
+    debug_path = log_path.with_name(log_path.stem + "_debug.log")
+
+    file_handler = logging.FileHandler(log_path)
+    console_handler = logging.StreamHandler()
+    debug_handler = logging.FileHandler(debug_path)
+    debug_handler.setLevel(logging.DEBUG)
+
     logging.basicConfig(
-        level=logging.INFO,
+        level=logging.DEBUG,
         format="%(asctime)s [%(levelname)s] %(message)s",
-        handlers=[logging.FileHandler(log_path), logging.StreamHandler()],
+        handlers=[file_handler, console_handler, debug_handler],
     )
     return logging.getLogger(__name__)

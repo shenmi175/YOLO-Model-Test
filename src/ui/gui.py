@@ -10,7 +10,7 @@ import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 
 from src.config import Config
-from src.datasets.xml_loader import load_dataset, Annotation
+from src.datasets.xml_loader import load_dataset, Annotation, DatasetConsistencyError
 from src.inference.predictor import Predictor
 from src.metrics.evaluator import Evaluator
 from src.metrics.confusion import plot_confusion_matrix
@@ -69,7 +69,11 @@ def run_evaluation(
     setup_logging(str(log_file))
 
     logging.info("Loading dataset from %s", cfg.data_dir)
-    annotations = load_dataset(cfg.data_dir)
+    try:
+        annotations = load_dataset(cfg.data_dir)
+    except DatasetConsistencyError as exc:
+        logging.debug("Dataset issue: %s", exc)
+        annotations = exc.annotations
     predictor = Predictor(cfg.model_path, cfg.confidence_threshold)
 
     predictions: dict[str, list] = {}
