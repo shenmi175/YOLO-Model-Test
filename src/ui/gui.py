@@ -140,10 +140,7 @@ def run_evaluation(
             for img_path, boxes in predictions.items():
                 img = Image.open(img_path).convert("RGB")
                 draw_boxes(img, boxes)
-                draw = ImageDraw.Draw(img)
-                for b in boxes:
-                    draw.rectangle([b.xmin, b.ymin, b.xmax, b.ymax], outline="red", width=2)
-                    draw.text((b.xmin, b.ymin), b.label, fill="red")
+
                 out_path = img_dir / Path(img_path).name
                 img.save(out_path)
             logging.info("Images saved to %s", img_dir)
