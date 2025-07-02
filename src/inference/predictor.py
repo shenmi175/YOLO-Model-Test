@@ -44,8 +44,16 @@ class Predictor:
             for b in r.boxes:
                 label = self.model.names[int(b.cls)]
                 xyxy = b.xyxy[0].tolist()
+                conf = float(b.conf[0]) if hasattr(b, "conf") else 0.0
                 boxes.append(
-                    Box(label, int(xyxy[0]), int(xyxy[1]), int(xyxy[2]), int(xyxy[3]))
+                    Box(
+                        label,
+                        int(xyxy[0]),
+                        int(xyxy[1]),
+                        int(xyxy[2]),
+                        int(xyxy[3]),
+                        conf,
+                    )
                 )
         return boxes
 

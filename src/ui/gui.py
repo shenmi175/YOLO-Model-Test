@@ -24,7 +24,9 @@ def run_evaluation(
     save_predictions: bool,
     save_images: bool = False,
     progress_cb: callable | None = None,
-        image_output_dir: str | None = None,
+    image_output_dir: str | None = None,
+    conf_threshold: float | None = None,
+    iou_threshold: float | None = None,
 ) -> tuple[Path, Path | None]:
     """Run evaluation, reporting progress via ``progress_cb``.
 
@@ -47,6 +49,11 @@ def run_evaluation(
 
     cfg.save_predictions = save_predictions
     cfg.save_images = save_images
+
+    if conf_threshold is not None:
+        cfg.confidence_threshold = conf_threshold
+    if iou_threshold is not None:
+        cfg.iou_threshold = iou_threshold
 
 
     out_root = Path(cfg.output_dir)
@@ -125,12 +132,14 @@ def run_evaluation(
         except Exception as exc:  # pragma: no cover - PIL optional
             logging.error("Saving images failed: %s", exc)
         else:
+            from src.utils.visualization import draw_boxes
             img_dir = Path(image_output_dir) if image_output_dir else run_dir / "images"
             if not img_dir.is_absolute():
                 img_dir = repo_root / img_dir
             img_dir.mkdir(parents=True, exist_ok=True)
             for img_path, boxes in predictions.items():
                 img = Image.open(img_path).convert("RGB")
+                draw_boxes(img, boxes)
                 draw = ImageDraw.Draw(img)
                 for b in boxes:
                     draw.rectangle([b.xmin, b.ymin, b.xmax, b.ymax], outline="red", width=2)
@@ -144,34 +153,35 @@ def run_evaluation(
 
 def launch() -> None:
     """Launch the parameter selection window."""
+    cfg = Config.from_file(None)
     root = tk.Tk()
     root.title("YOLO Model Test")
 
     tk.Label(root, text="Model path:").grid(row=0, column=0, sticky="e")
-    model_var = tk.StringVar(value="models/best.pt")
+    model_var = tk.StringVar(value=cfg.model_path)
     tk.Entry(root, textvariable=model_var, width=40).grid(row=0, column=1)
     tk.Button(root, text="Browse", command=lambda: model_var.set(
         filedialog.askopenfilename(initialdir="models", filetypes=[("Model", "*.pt *.onnx"), ("All", "*.*")])
     )).grid(row=0, column=2)
 
     tk.Label(root, text="Data directory:").grid(row=1, column=0, sticky="e")
-    data_var = tk.StringVar(value="test_data")
+    data_var = tk.StringVar(value=cfg.data_dir)
     tk.Entry(root, textvariable=data_var, width=40).grid(row=1, column=1)
     tk.Button(root, text="Browse", command=lambda: data_var.set(
         filedialog.askdirectory(initialdir="test_data")
     )).grid(row=1, column=2)
 
     tk.Label(root, text="Output directory:").grid(row=2, column=0, sticky="e")
-    out_var = tk.StringVar(value="output")
+    out_var = tk.StringVar(value=cfg.output_dir)
     tk.Entry(root, textvariable=out_var, width=40).grid(row=2, column=1)
     tk.Button(root, text="Browse", command=lambda: out_var.set(
         filedialog.askdirectory(initialdir="output")
     )).grid(row=2, column=2)
 
-    save_var = tk.BooleanVar(value=False)
+    save_var = tk.BooleanVar(value=cfg.save_predictions)
     tk.Checkbutton(root, text="Save predictions", variable=save_var).grid(row=3, columnspan=3)
 
-    image_var = tk.BooleanVar(value=False)
+    image_var = tk.BooleanVar(value=cfg.save_images)
     tk.Checkbutton(root, text="Save images", variable=image_var).grid(row=4, columnspan=3)
 
     tk.Label(root, text="Image output dir:").grid(row=5, column=0, sticky="e")
@@ -181,8 +191,16 @@ def launch() -> None:
         filedialog.askdirectory(initialdir="output")
     )).grid(row=5, column=2)
 
+    tk.Label(root, text="Confidence:").grid(row=6, column=0, sticky="e")
+    conf_var = tk.StringVar(value=str(cfg.confidence_threshold))
+    tk.Entry(root, textvariable=conf_var, width=10).grid(row=6, column=1, sticky="w")
+
+    tk.Label(root, text="IoU threshold:").grid(row=7, column=0, sticky="e")
+    iou_var = tk.StringVar(value=str(cfg.iou_threshold))
+    tk.Entry(root, textvariable=iou_var, width=10).grid(row=7, column=1, sticky="w")
+
     progress = ttk.Progressbar(root, orient="horizontal", length=300, mode="determinate")
-    progress.grid(row=6, columnspan=3, pady=5)
+    progress.grid(row=8, columnspan=3, pady=5)
 
     def update_progress(current: int, total: int) -> None:
         progress["maximum"] = total
@@ -200,6 +218,8 @@ def launch() -> None:
                     image_var.get(),
                     update_progress,
                     img_out_var.get() or None,
+                    float(conf_var.get()),
+                    float(iou_var.get()),
                 )
                 msg = "Evaluation complete"
                 if img_dir:
@@ -210,7 +230,7 @@ def launch() -> None:
 
         threading.Thread(target=_worker, daemon=True).start()
 
-    tk.Button(root, text="Run", command=run).grid(row=7, columnspan=3, pady=5)
+    tk.Button(root, text="Run", command=run).grid(row=9, columnspan=3, pady=5)
     root.mainloop()
 
 

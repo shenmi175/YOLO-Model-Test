@@ -16,6 +16,7 @@ class Box:
     ymin: int
     xmax: int
     ymax: int
+    confidence: float | None = None
 
 
 @dataclass
@@ -46,7 +47,7 @@ def parse_annotation(xml_file: str) -> Annotation:
             ymax = int(float(bnd.findtext("ymax", "0")))
         except ValueError:
             continue
-        boxes.append(Box(name, xmin, ymin, xmax, ymax))
+        boxes.append(Box(name, xmin, ymin, xmax, ymax, 1.0))
 
     return Annotation(str(image_path), boxes)
 

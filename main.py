@@ -59,6 +59,8 @@ def main() -> None:
         cfg.save_images,
         None,
         img_dir,
+        cfg.confidence_threshold,
+        cfg.iou_threshold,
     )
 
 
