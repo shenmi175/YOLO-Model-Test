@@ -6,21 +6,11 @@
   <component name="ChangeListManager">
     <list default="true" id="757978fc-c7d2-4851-a074-3aa64ec6cd9e" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/cli.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/confusion_cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/confusion_cli.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/output/2_3_4m1/confusion_matrix.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/output/2_3_4m1/confusion_probability.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/output/2_3_4m1/predictions.txt" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/datasets/dataset_stats.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/datasets/dataset_stats.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/datasets/xml_loader.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/datasets/xml_loader.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/log_setup.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/log_setup.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/gui.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/gui.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_cli.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_confusion_cli.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_dataset.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_end_to_end.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_evaluator.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_full_pipeline.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_gui_run.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_predictor.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -251,7 +241,7 @@
       <updated>1751010007857</updated>
       <workItem from="1751010008951" duration="10653000" />
       <workItem from="1751265477723" duration="924000" />
-      <workItem from="1751267215879" duration="29946000" />
+      <workItem from="1751267215879" duration="33418000" />
     </task>
     <servers />
   </component>

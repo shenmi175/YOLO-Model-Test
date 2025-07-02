@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections import Counter
 from typing import Dict, List
 
-from .xml_loader import Annotation, load_dataset
+
 import logging
 from .xml_loader import Annotation, load_dataset, DatasetConsistencyError
 
@@ -60,3 +60,6 @@ def plot_class_distribution(stats: Dict[str, object], save_path: str | None = No
     else:
         plt.show()
     plt.close(fig)
+
+
+
