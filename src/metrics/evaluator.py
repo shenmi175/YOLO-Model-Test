@@ -39,19 +39,24 @@ class EvalResult:
 
 
 class Evaluator:
-    def __init__(self, iou_threshold: float = 0.5) -> None:
+    def __init__(self, iou_threshold: float = 0.5, class_names: List[str] | None = None) -> None:
         self.iou_threshold = iou_threshold
+        self.class_names = class_names
 
     def evaluate(self, annotations: List[Annotation], predictions: Dict[str, List[Box]]) -> EvalResult:
         tp = fp = fn = 0
         pred_matches: List[int] = []
         total_gt = 0
 
-        label_set = {b.label for ann in annotations for b in ann.boxes}
-        for boxes in predictions.values():
-            for b in boxes:
-                label_set.add(b.label)
-        labels = sorted(label_set)
+        if self.class_names is not None:
+            labels = list(self.class_names)
+        else:
+            label_set = {b.label for ann in annotations for b in ann.boxes}
+            for boxes in predictions.values():
+                for b in boxes:
+                    label_set.add(b.label)
+            labels = sorted(label_set)
+
         labels.append("background")
         bg_idx = len(labels) - 1
         idx = {l: i for i, l in enumerate(labels)}
@@ -59,11 +64,18 @@ class Evaluator:
         confusion = [[0 for _ in labels] for _ in labels]
 
         for ann in annotations:
-            gts = ann.boxes
+            if self.class_names is not None:
+                gts = [b for b in ann.boxes if b.label in self.class_names]
+            else:
+                gts = ann.boxes
+
             total_gt += len(gts)
             preds = predictions.get(ann.image_path, [])
+
+            if self.class_names is not None:
+                preds = [b for b in preds if b.label in self.class_names]
             matched_gt: set[int] = set()
-            pred_used: set[int] = set()
+            # pred_used: set[int] = set()
 
             for i, pred in enumerate(preds):
                 best_i = 0.0
@@ -77,12 +89,11 @@ class Evaluator:
                         best_j = j
                 if best_j >= 0:
                     matched_gt.add(best_j)
-                    pred_used.add(i)
                     tp += 1
                     pred_matches.append(1)
                     p_idx = idx.get(pred.label, bg_idx)
                     g_idx = idx.get(gts[best_j].label, bg_idx)
-                    confusion[p_idx][g_idx] += 1
+                    confusion[g_idx][p_idx] += 1
                 else:
                     fp += 1
                     pred_matches.append(0)
@@ -93,7 +104,7 @@ class Evaluator:
                 if j not in matched_gt:
                     fn += 1
                     g_idx = idx.get(gt.label, bg_idx)
-                    confusion[bg_idx][g_idx] += 1
+                    confusion[g_idx][bg_idx] += 1
 
         precision = tp / (tp + fp) if tp + fp else 0.0
         recall = tp / (tp + fn) if tp + fn else 0.0

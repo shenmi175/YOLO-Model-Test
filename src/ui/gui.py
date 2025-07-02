@@ -84,7 +84,8 @@ def run_evaluation(
         if progress_cb:
             progress_cb(i, total)
 
-    evaluator = Evaluator(cfg.iou_threshold)
+    class_names = list(getattr(predictor.model, "names", [])) if predictor.model is not None else None
+    evaluator = Evaluator(cfg.iou_threshold, class_names)
 
     def save_result(name: str, anns: list[Annotation]) -> None:
         preds = {a.image_path: predictions[a.image_path] for a in anns}

@@ -73,7 +73,9 @@ def main() -> None:
         boxes = predictor.predict(ann.image_path)
         predictions[ann.image_path] = boxes
 
-    evaluator = Evaluator(cfg.iou_threshold)
+    class_names = list(getattr(predictor.model, "names", [])) if predictor.model is not None else None
+    evaluator = Evaluator(cfg.iou_threshold, class_names)
+
     result = evaluator.evaluate(annotations, predictions)
 
     logging.info("Precision: %.3f", result.precision)
