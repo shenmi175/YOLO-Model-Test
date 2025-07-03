@@ -4,29 +4,33 @@ from pathlib import Path
 
 
 def setup_logging(path: str = "logs") -> logging.Logger:
-    """Initialize logging to file and console.
+    """Initialize run and debug log files.
 
-    ``path`` can be either a directory or a full log file path. When a
-    directory is provided, a timestamped file will be created inside it.
+    ``path`` can be either a directory or a full path to ``run.log``. If a
+    directory is given, ``run.log`` and ``debug.log`` will be created inside it.
+    ``debug.log`` only records errors while ``run.log`` captures general
+    information.
     """
 
     log_path = Path(path)
-    if log_path.suffix:
+    if log_path.suffix:  # a file path was provided
         log_path.parent.mkdir(parents=True, exist_ok=True)
-    else:
+        run_log = log_path
+    else:  # treat ``path`` as a directory
         log_path.mkdir(parents=True, exist_ok=True)
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        log_path = log_path / f"log_{timestamp}.txt"
+        run_log = log_path / "run.log"
 
-    debug_path = log_path.with_name(log_path.stem + "_debug.log")
+    debug_log = run_log.with_name("debug.log")
 
-    file_handler = logging.FileHandler(log_path)
+    file_handler = logging.FileHandler(run_log)
+    file_handler.setLevel(logging.INFO)
     console_handler = logging.StreamHandler()
-    debug_handler = logging.FileHandler(debug_path)
-    debug_handler.setLevel(logging.DEBUG)
+    console_handler.setLevel(logging.INFO)
+    debug_handler = logging.FileHandler(debug_log)
+    debug_handler.setLevel(logging.ERROR)
 
     logging.basicConfig(
-        level=logging.DEBUG,
+        level=logging.INFO,
         format="%(asctime)s [%(levelname)s] %(message)s",
         handlers=[file_handler, console_handler, debug_handler],
     )

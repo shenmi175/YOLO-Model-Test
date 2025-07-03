@@ -5,24 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="757978fc-c7d2-4851-a074-3aa64ec6cd9e" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/output/2_3_4m1/1m/confusion_matrix.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/output/2_3_4m1/1m/confusion_probability.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/output/2_3_4m1/2m/confusion_matrix.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/output/2_3_4m1/2m/confusion_probability.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/output/2_3_4m1/confusion_matrix.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/output/2_3_4m1/confusion_probability.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/output/2_3_4m1/predictions.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/output/2_3_4m2/1m/confusion_matrix.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/output/2_3_4m2/1m/confusion_probability.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/output/2_3_4m2/2m/confusion_matrix.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/output/2_3_4m2/2m/confusion_probability.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/output/2_3_4m2/confusion_matrix.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/output/2_3_4m2/confusion_probability.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/output/2_3_4m2/predictions.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/cli.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/confusion_cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/confusion_cli.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/metrics/evaluator.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/metrics/evaluator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/log_setup.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/log_setup.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ui/gui.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/gui.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -255,7 +240,7 @@
       <updated>1751010007857</updated>
       <workItem from="1751010008951" duration="10653000" />
       <workItem from="1751265477723" duration="924000" />
-      <workItem from="1751267215879" duration="42351000" />
+      <workItem from="1751267215879" duration="44869000" />
     </task>
     <servers />
   </component>

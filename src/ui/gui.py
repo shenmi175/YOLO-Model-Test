@@ -17,6 +17,11 @@ from src.metrics.confusion import plot_confusion_matrix
 from src.log_setup import setup_logging
 
 
+try:  # progress bars are optional
+    from tqdm import tqdm  # type: ignore
+except Exception:  # pragma: no cover - tqdm may not be installed
+    tqdm = None  # type: ignore
+
 def run_evaluation(
     model_path: str,
     data_dir: str,
@@ -148,12 +153,33 @@ def run_evaluation(
             if not img_dir.is_absolute():
                 img_dir = repo_root / img_dir
             img_dir.mkdir(parents=True, exist_ok=True)
-            for img_path, boxes in predictions.items():
+
+            items = list(predictions.items())
+            iterable = items
+            if tqdm is not None:
+                iterable = tqdm(items, desc="Saving images", unit="img")
+            else:
+                total = len(items)
+
+                def _simple_progress(it):
+                    for idx, it_item in enumerate(it, 1):
+                        print(f"{idx}/{total}", end="\r")
+                        yield it_item
+                    print()
+
+                iterable = _simple_progress(items)
+
+            for img_path, boxes in iterable:
                 img = Image.open(img_path).convert("RGB")
                 draw_boxes(img, boxes)
 
+                rel = Path(img_path).relative_to(root_dir)
+                out_path = img_dir / rel
+                out_path.parent.mkdir(parents=True, exist_ok=True)
+
                 out_path = img_dir / Path(img_path).name
                 img.save(out_path)
+
             logging.info("Images saved to %s", img_dir)
             img_dir_path = img_dir
 
