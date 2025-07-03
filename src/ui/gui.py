@@ -126,8 +126,10 @@ def run_evaluation(
     root_dir = Path(cfg.data_dir)
     for ann in annotations:
         rel = Path(ann.image_path).relative_to(root_dir)
-        grp = rel.parts[0] if len(rel.parts) > 1 else root_dir.name
-        groups.setdefault(grp, []).append(ann)
+        parts = rel.parts
+        for i in range(1, len(parts)):
+            key = Path(*parts[:i]).as_posix()
+            groups.setdefault(key, []).append(ann)
 
     for name, anns in groups.items():
         save_result(name, anns)

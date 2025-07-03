@@ -111,13 +111,15 @@ def main() -> None:
     # overall
     save_result("overall", annotations)
 
-    # per folder
+    # per folder (all levels)
     groups: dict[str, list] = {}
     root = Path(cfg.data_dir)
     for ann in annotations:
         rel = Path(ann.image_path).relative_to(root)
-        grp = rel.parts[0] if len(rel.parts) > 1 else root.name
-        groups.setdefault(grp, []).append(ann)
+        parts = rel.parts
+        for i in range(1, len(parts)):
+            key = Path(*parts[:i]).as_posix()
+            groups.setdefault(key, []).append(ann)
 
     for name, anns in groups.items():
         save_result(name, anns)
