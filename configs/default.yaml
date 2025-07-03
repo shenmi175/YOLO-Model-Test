@@ -1,4 +1,4 @@
-model_path: models/best.pt
+model_path: models/20250616.pt
 confidence_threshold: 0.50
 iou_threshold: 0.45
 data_dir: test_data

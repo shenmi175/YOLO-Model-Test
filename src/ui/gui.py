@@ -78,6 +78,18 @@ def run_evaluation(
     log_file = run_dir / "run.log"
     setup_logging(str(log_file))
 
+    # Record run configuration parameters for easier reproducibility
+    logging.info("Model path: %s", cfg.model_path)
+    logging.info("Dataset dir: %s", cfg.data_dir)
+    logging.info("Output dir: %s", cfg.output_dir)
+    logging.info("Confidence threshold: %.3f", cfg.confidence_threshold)
+    logging.info("IoU threshold: %.3f", cfg.iou_threshold)
+    logging.info("Image size: %s", cfg.img_size)
+    logging.info("Batch size: %d", cfg.batch_size)
+    logging.info("Save predictions: %s", cfg.save_predictions)
+    logging.info("Save images: %s", cfg.save_images)
+    if image_output_dir:
+        logging.info("Image output dir: %s", image_output_dir)
     logging.info("Loading dataset from %s", cfg.data_dir)
     try:
         annotations = load_dataset(cfg.data_dir)

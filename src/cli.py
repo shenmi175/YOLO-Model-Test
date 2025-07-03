@@ -50,6 +50,15 @@ def main() -> None:
     if args.batch_size is not None:
         cfg.batch_size = args.batch_size
 
+    # Log run parameters
+    logging.info("Model path: %s", cfg.model_path)
+    logging.info("Dataset dir: %s", cfg.data_dir)
+    logging.info("Output dir: %s", cfg.output_dir)
+    logging.info("Confidence threshold: %.3f", cfg.confidence_threshold)
+    logging.info("IoU threshold: %.3f", cfg.iou_threshold)
+    logging.info("Image size: %s", cfg.img_size)
+    logging.info("Batch size: %d", cfg.batch_size)
+    logging.info("Save predictions: %s", cfg.save_predictions)
     logging.info("Loading dataset from %s", cfg.data_dir)
     try:
         annotations = load_dataset(cfg.data_dir)
