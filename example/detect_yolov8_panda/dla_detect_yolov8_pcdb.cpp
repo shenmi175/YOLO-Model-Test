@@ -17,6 +17,171 @@
 using namespace std;
 #include "detect_y8_pcdb.h"
 
+#include <filesystem>
+#include <regex>
+
+namespace fs = std::filesystem;
+
+static std::vector<std::string> yolov8_labels = {
+    "person", "cat", "dog", "catface", "dogface", "hand", "background"};
+
+std::vector<std::string> yolov8_collect_images(const std::string& root) {
+    std::vector<std::string> files;
+    for (auto const& entry : fs::recursive_directory_iterator(root)) {
+        if (!entry.is_regular_file())
+            continue;
+        auto ext = entry.path().extension().string();
+        if (ext == ".jpg" || ext == ".png" || ext == ".jpeg") {
+            files.push_back(entry.path().string());
+        }
+    }
+    return files;
+}
+
+bool yolov8_parse_xml(const std::string& xml_path,
+                      std::vector<yolov8_DetectionBBoxInfo>& boxes,
+                      const std::map<std::string, int>& label_map) {
+    std::ifstream ifs(xml_path);
+    if (!ifs.is_open())
+        return false;
+    std::string content((std::istreambuf_iterator<char>(ifs)),
+                        std::istreambuf_iterator<char>());
+
+    std::regex size_re("<size>.*?<width>([^<]+)</width>.*?<height>([^<]+)</height>",
+                       std::regex::icase | std::regex::dotall);
+    std::smatch msize;
+    float w = Input_IMG_W;
+    float h = Input_IMG_H;
+    if (std::regex_search(content, msize, size_re)) {
+        try {
+            w = std::stof(msize[1]);
+            h = std::stof(msize[2]);
+        } catch (...) {
+        }
+    }
+
+    std::regex obj_re(
+        "<object>.*?<name>([^<]+)</name>.*?<xmin>([^<]+)</xmin>.*?<ymin>([^<]+)"
+        "</ymin>.*?<xmax>([^<]+)</xmax>.*?<ymax>([^<]+)</ymax>",
+        std::regex::icase | std::regex::dotall);
+    auto it = std::sregex_iterator(content.begin(), content.end(), obj_re);
+    auto end = std::sregex_iterator();
+    for (; it != end; ++it) {
+        std::smatch m = *it;
+        auto name = m[1].str();
+        if (label_map.count(name) == 0)
+            continue;
+        yolov8_DetectionBBoxInfo b{};
+        b.classID = label_map.at(name);
+        try {
+            b.xmin = std::stof(m[2]) * Input_IMG_W / w;
+            b.ymin = std::stof(m[3]) * Input_IMG_H / h;
+            b.xmax = std::stof(m[4]) * Input_IMG_W / w;
+            b.ymax = std::stof(m[5]) * Input_IMG_H / h;
+        } catch (...) {
+            continue;
+        }
+        b.score = 1.0f;
+        boxes.push_back(b);
+    }
+    return !boxes.empty();
+}
+
+static float yolov8_iou(const yolov8_DetectionBBoxInfo& a,
+                        const yolov8_DetectionBBoxInfo& b) {
+    float x1 = std::max(a.xmin, b.xmin);
+    float y1 = std::max(a.ymin, b.ymin);
+    float x2 = std::min(a.xmax, b.xmax);
+    float y2 = std::min(a.ymax, b.ymax);
+    float inter = std::max(0.f, x2 - x1) * std::max(0.f, y2 - y1);
+    if (inter <= 0)
+        return 0.f;
+    float area1 = (a.xmax - a.xmin) * (a.ymax - a.ymin);
+    float area2 = (b.xmax - b.xmin) * (b.ymax - b.ymin);
+    return inter / (area1 + area2 - inter);
+}
+
+void yolov8_update_confusion(std::vector<std::vector<int>>& matrix,
+                             const std::vector<yolov8_DetectionBBoxInfo>& preds,
+                             const std::vector<yolov8_DetectionBBoxInfo>& gts) {
+    std::vector<int> gt_used(gts.size(), 0);
+    std::vector<int> pred_used(preds.size(), 0);
+    int bg = yolov8_CLASSES; // background index
+
+    for (size_t i = 0; i < preds.size(); ++i) {
+        float best_iou = 0.f;
+        int best_j = -1;
+        for (size_t j = 0; j < gts.size(); ++j) {
+            if (gt_used[j])
+                continue;
+            float iv = yolov8_iou(preds[i], gts[j]);
+            if (iv >= 0.5f && iv > best_iou) {
+                best_iou = iv;
+                best_j = j;
+            }
+        }
+        if (best_j >= 0) {
+            gt_used[best_j] = 1;
+            pred_used[i] = 1;
+            int gt_idx = gts[best_j].classID;
+            int pd_idx = preds[i].classID;
+            matrix[gt_idx][pd_idx] += 1;
+        }
+    }
+
+    for (size_t j = 0; j < gts.size(); ++j) {
+        if (!gt_used[j]) {
+            int gt_idx = gts[j].classID;
+            matrix[gt_idx][bg] += 1;
+        }
+    }
+
+    for (size_t i = 0; i < preds.size(); ++i) {
+        if (!pred_used[i]) {
+            int pd_idx = preds[i].classID;
+            matrix[bg][pd_idx] += 1;
+        }
+    }
+}
+
+void yolov8_draw_confusion(const std::vector<std::vector<int>>& matrix,
+                           const std::vector<std::string>& labels,
+                           const std::string& save_path) {
+    int n = labels.size();
+    int cell = 60;
+    cv::Mat img((n + 1) * cell, (n + 1) * cell, CV_8UC3, cv::Scalar(255, 255, 255));
+
+    int max_val = 0;
+    for (auto const& row : matrix) {
+        for (auto v : row)
+            if (v > max_val)
+                max_val = v;
+    }
+    max_val = std::max(1, max_val);
+
+    for (int i = 0; i < n; ++i) {
+        cv::putText(img, labels[i], cv::Point((i + 1) * cell + 5, cell - 5),
+                    cv::FONT_HERSHEY_SIMPLEX, 0.4, cv::Scalar(0, 0, 0), 1);
+        cv::putText(img, labels[i], cv::Point(5, (i + 1) * cell + cell / 2),
+                    cv::FONT_HERSHEY_SIMPLEX, 0.4, cv::Scalar(0, 0, 0), 1);
+    }
+
+    for (int r = 0; r < n; ++r) {
+        for (int c = 0; c < n; ++c) {
+            int val = matrix[r][c];
+            int intensity = 255 - static_cast<int>(255.0 * val / max_val);
+            cv::rectangle(img, cv::Rect((c + 1) * cell, (r + 1) * cell, cell, cell),
+                          cv::Scalar(intensity, intensity, 255), cv::FILLED);
+            char buf[16];
+            sprintf(buf, "%d", val);
+            cv::putText(img, buf,
+                        cv::Point((c + 1) * cell + cell / 4, (r + 1) * cell + cell / 2),
+                        cv::FONT_HERSHEY_SIMPLEX, 0.4, cv::Scalar(0, 0, 0), 1);
+        }
+    }
+
+    cv::imwrite(save_path, img);
+}
 
 int main(int argc,char *argv[])
 {
@@ -45,22 +210,27 @@ int main(int argc,char *argv[])
                         OutputTensorVector,
                         OfflineModelInfo,
                         desc);
-  cv::Mat imgSrc;
-  std::vector<std::string> imgNames;
-  //读取图片路径
-  cv::glob(pImagePath, imgNames);
-  char imgNameCount[128];
+  std::vector<std::string> imgNames = yolov8_collect_images(pImagePath);
+  std::map<std::string, int> label_map;
+  for (size_t i = 0; i < yolov8_labels.size() - 1; ++i) {
+      label_map[yolov8_labels[i]] = i;
+  }
+  std::map<std::string, std::vector<std::vector<int>>> confusion;
+  auto init_matrix = [&](){
+      return std::vector<std::vector<int>>(yolov8_CLASSES + 1,
+                                           std::vector<int>(yolov8_CLASSES + 1, 0));
+  };
+  char imgNameCount[512];
+
   struct  timeval    all_tv_start;
   struct  timeval    all_tv_end;
-  struct  timeval    all_tv_start1;
-  struct  timeval    all_tv_end1;
-  int all_elasped_time;
-  // while(1){
-  for(std::vector<std::string> :: iterator imgName = imgNames.begin(); imgName != imgNames.end(); imgName ++)
-  {
 
-    sprintf(imgNameCount, "%s", imgName->c_str());
-    // 读取原图
+  int all_elasped_time;
+  for(const auto& imgPath : imgNames)
+
+  {
+    sprintf(imgNameCount, "%s", imgPath.c_str());
+
     imgSrc = cv::imread(imgNameCount);
 
     gettimeofday(&all_tv_start,NULL);
@@ -73,6 +243,18 @@ int main(int argc,char *argv[])
                 InputTensorVector,
                 OutputTensorVector,
                 desc);
+    fs::path xml_path = fs::path(imgPath).replace_extension(".xml");
+    if (fs::exists(xml_path)) {
+      std::vector<yolov8_DetectionBBoxInfo> gt_boxes;
+      if (yolov8_parse_xml(xml_path.string(), gt_boxes, label_map)) {
+        std::string folder = fs::relative(xml_path.parent_path(), pImagePath).string();
+        if(folder.empty()) folder = "root";
+        if(!confusion.count(folder)) confusion[folder] = init_matrix();
+        if(!confusion.count("overall")) confusion["overall"] = init_matrix();
+        yolov8_update_confusion(confusion[folder], detect_info, gt_boxes);
+        yolov8_update_confusion(confusion["overall"], detect_info, gt_boxes);
+      }
+    }
     // usleep(77000);
 
     gettimeofday(&all_tv_end,NULL); 
@@ -99,6 +281,16 @@ int main(int argc,char *argv[])
       vector<cv::Scalar> colors = yolov8_GetColors(yolov8_CLASSES);
       yolov8_WriteVisualizeBBox(imgNameCount, detect_info, colors);
     }  
-  }  
+  }
+
+  for (auto& kv : confusion) {
+    std::string folder = kv.first;
+    std::vector<std::vector<int>>& mat = kv.second;
+    fs::path out_dir = fs::path(pImagePath) / folder / "eval";
+    fs::create_directories(out_dir);
+    fs::path out_path = out_dir / "confusion_matrix.png";
+    yolov8_draw_confusion(mat, yolov8_labels, out_path.string());
+  }
+
   return 0;
 }

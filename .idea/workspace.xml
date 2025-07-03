@@ -5,13 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="757978fc-c7d2-4851-a074-3aa64ec6cd9e" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/test_data/test1/test2/22112604_002940.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test_data/test1/test2/22112604_002940.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test_data/test2/test2/22112604_002940.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test_data/test2/test2/22112604_002940.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/configs/default.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/configs/default.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example/detect_yolov8_panda/detect_y8_pcdb.h" beforeDir="false" afterPath="$PROJECT_DIR$/example/detect_yolov8_panda/detect_y8_pcdb.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example/detect_yolov8_panda/dla_detect_yolov8_pcdb.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/example/detect_yolov8_panda/dla_detect_yolov8_pcdb.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/best.pt" beforeDir="false" afterPath="$PROJECT_DIR$/models/20250616.pt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/cli.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/config.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/confusion_cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/confusion_cli.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/inference/predictor.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/inference/predictor.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ui/gui.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/gui.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -69,7 +72,7 @@
     "Python.visualization.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "main",
-    "last_opened_file_path": "G:/A_Share/YOLO-Model-Test/test_data/test2",
+    "last_opened_file_path": "G:/A_Share/YOLO-Model-Test/models",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -80,9 +83,10 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="G:\A_Share\YOLO-Model-Test\models" />
+      <recent name="G:\A_Share\YOLO-Model-Test\example" />
       <recent name="G:\A_Share\YOLO-Model-Test\test_data\test2" />
       <recent name="G:\A_Share\YOLO-Model-Test\test_data\test1" />
-      <recent name="G:\A_Share\YOLO-Model-Test\models" />
       <recent name="G:\A_Share\YOLO-Model-Test" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
@@ -246,7 +250,7 @@
       <updated>1751010007857</updated>
       <workItem from="1751010008951" duration="10653000" />
       <workItem from="1751265477723" duration="924000" />
-      <workItem from="1751267215879" duration="45916000" />
+      <workItem from="1751267215879" duration="55196000" />
     </task>
     <servers />
   </component>

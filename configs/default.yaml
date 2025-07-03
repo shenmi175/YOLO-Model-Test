@@ -5,3 +5,5 @@ data_dir: test_data
 save_predictions: true
 output_dir: output
 save_images: false
+img_size: [192, 320]
+batch_size: 1

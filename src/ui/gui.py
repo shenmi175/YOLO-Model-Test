@@ -32,6 +32,8 @@ def run_evaluation(
     image_output_dir: str | None = None,
     conf_threshold: float | None = None,
     iou_threshold: float | None = None,
+    img_size: tuple[int, int] | None = None,
+    batch_size: int | None = None,
 ) -> tuple[Path, Path | None]:
     """Run evaluation, reporting progress via ``progress_cb``.
 
@@ -59,7 +61,10 @@ def run_evaluation(
         cfg.confidence_threshold = conf_threshold
     if iou_threshold is not None:
         cfg.iou_threshold = iou_threshold
-
+    if img_size is not None:
+        cfg.img_size = img_size
+    if batch_size is not None:
+        cfg.batch_size = batch_size
 
     out_root = Path(cfg.output_dir)
     data_name = Path(cfg.data_dir).name
@@ -79,7 +84,12 @@ def run_evaluation(
     except DatasetConsistencyError as exc:
         logging.debug("Dataset issue: %s", exc)
         annotations = exc.annotations
-    predictor = Predictor(cfg.model_path, cfg.confidence_threshold)
+    predictor = Predictor(
+        cfg.model_path,
+        cfg.confidence_threshold,
+        cfg.img_size,
+        cfg.batch_size,
+    )
 
     predictions: dict[str, list] = {}
     total = len(annotations)
@@ -235,8 +245,16 @@ def launch() -> None:
     iou_var = tk.StringVar(value=str(cfg.iou_threshold))
     tk.Entry(root, textvariable=iou_var, width=10).grid(row=7, column=1, sticky="w")
 
+    tk.Label(root, text="Image size:").grid(row=8, column=0, sticky="e")
+    img_size_var = tk.StringVar(value=f"{cfg.img_size[0]} {cfg.img_size[1]}")
+    tk.Entry(root, textvariable=img_size_var, width=10).grid(row=8, column=1, sticky="w")
+
+    tk.Label(root, text="Batch size:").grid(row=9, column=0, sticky="e")
+    batch_var = tk.StringVar(value=str(cfg.batch_size))
+    tk.Entry(root, textvariable=batch_var, width=10).grid(row=9, column=1, sticky="w")
+
     progress = ttk.Progressbar(root, orient="horizontal", length=300, mode="determinate")
-    progress.grid(row=8, columnspan=3, pady=5)
+    progress.grid(row=10, columnspan=3, pady=5)
 
     def update_progress(current: int, total: int) -> None:
         progress["maximum"] = total
@@ -246,6 +264,7 @@ def launch() -> None:
     def run() -> None:
         def _worker() -> None:
             try:
+                size_parts = [int(p) for p in img_size_var.get().split()]
                 run_dir, img_dir = run_evaluation(
                     model_var.get(),
                     data_var.get(),
@@ -256,6 +275,8 @@ def launch() -> None:
                     img_out_var.get() or None,
                     float(conf_var.get()),
                     float(iou_var.get()),
+                    tuple(size_parts),
+                    int(batch_var.get()),
                 )
                 msg = "Evaluation complete"
                 if img_dir:
@@ -266,7 +287,7 @@ def launch() -> None:
 
         threading.Thread(target=_worker, daemon=True).start()
 
-    tk.Button(root, text="Run", command=run).grid(row=9, columnspan=3, pady=5)
+    tk.Button(root, text="Run", command=run).grid(row=11, columnspan=3, pady=5)
     root.mainloop()
 
 

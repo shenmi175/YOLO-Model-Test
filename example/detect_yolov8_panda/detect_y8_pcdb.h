@@ -134,3 +134,14 @@ void yolov8_WriteVisualizeBBox(string strImageName,
 int yolov8_mkpath(std::string sDir, mode_t mode=0777);
 
 
+// utility helpers for evaluation
+std::vector<std::string> yolov8_collect_images(const std::string& root);
+bool yolov8_parse_xml(const std::string& xml_path,
+                      std::vector<yolov8_DetectionBBoxInfo>& boxes,
+                      const std::map<std::string, int>& label_map);
+void yolov8_update_confusion(std::vector<std::vector<int>>& matrix,
+                             const std::vector<yolov8_DetectionBBoxInfo>& preds,
+                             const std::vector<yolov8_DetectionBBoxInfo>& gts);
+void yolov8_draw_confusion(const std::vector<std::vector<int>>& matrix,
+                           const std::vector<std::string>& labels,
+                           const std::string& save_path);

@@ -26,6 +26,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--model", help="Model path", default=None)
     parser.add_argument("--data", help="Dataset directory", default=None)
     parser.add_argument("--output", help="Output directory", default=None)
+    parser.add_argument("--img-size", type=int, nargs=2, metavar=("H", "W"), help="Inference image size", default=None)
+    parser.add_argument("--batch-size", type=int, help="Batch size", default=None)
     parser.add_argument("--save-images", action="store_true", help="Save annotated images")
     parser.add_argument("--img-dir", help="Directory for saved images", default=None)
     parser.add_argument("--no-save", action="store_true", help="Do not save prediction txt")
@@ -49,6 +51,10 @@ def main() -> None:
         cfg.save_predictions = False
     if args.save_images:
         cfg.save_images = True
+    if args.img_size:
+        cfg.img_size = tuple(args.img_size)
+    if args.batch_size is not None:
+        cfg.batch_size = args.batch_size
     img_dir = args.img_dir
 
     gui.run_evaluation(
@@ -61,6 +67,8 @@ def main() -> None:
         img_dir,
         cfg.confidence_threshold,
         cfg.iou_threshold,
+        cfg.img_size,
+        cfg.batch_size,
     )
 
 

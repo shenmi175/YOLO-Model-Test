@@ -22,6 +22,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--model", help="Model weights", default=None)
     parser.add_argument("--data", help="Dataset directory", default=None)
     parser.add_argument("--output", help="Output directory", default=None)
+    parser.add_argument("--img-size", type=int, nargs=2, metavar=("H", "W"), help="Inference image size", default=None)
+    parser.add_argument("--batch-size", type=int, help="Batch size", default=None)
     parser.add_argument("--no-save", action="store_true", help="Do not save prediction txt")
     parser.add_argument("--log-dir", help="Directory for logs", default="logs")
     parser.add_argument("--progress", action="store_true", help="Show progress bar")
@@ -39,6 +41,10 @@ def main() -> None:
         cfg.output_dir = args.output
     if args.no_save:
         cfg.save_predictions = False
+    if args.img_size:
+        cfg.img_size = tuple(args.img_size)
+    if args.batch_size is not None:
+        cfg.batch_size = args.batch_size
 
     out_root = Path(cfg.output_dir)
     data_name = Path(cfg.data_dir).name
@@ -57,7 +63,12 @@ def main() -> None:
     except DatasetConsistencyError as exc:
         logging.debug("Dataset issue: %s", exc)
         annotations = exc.annotations
-    predictor = Predictor(cfg.model_path, cfg.confidence_threshold)
+    predictor = Predictor(
+        cfg.model_path,
+        cfg.confidence_threshold,
+        cfg.img_size,
+        cfg.batch_size,
+    )
     predictions = {}
 
     iterable = annotations

@@ -57,6 +57,8 @@ class Config:
     save_predictions: bool = True
     save_images: bool = False
     output_dir: str = "output"
+    img_size: tuple[int, int] | list[int] = (192, 320)
+    batch_size: int = 1
 
     @classmethod
     def from_file(cls, path: str | None = None) -> "Config":
@@ -66,6 +68,8 @@ class Config:
             path = os.path.join(root, "configs", "default.yaml")
         data = load_config(path)
         cfg = cls(**data)
+        if isinstance(cfg.img_size, list):
+            cfg.img_size = tuple(int(x) for x in cfg.img_size)
 
         repo_root = os.path.dirname(os.path.dirname(__file__))
         for key in ("model_path", "data_dir", "output_dir"):
