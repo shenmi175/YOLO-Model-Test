@@ -24,7 +24,7 @@ _PALETTE: List[Tuple[int, int, int]] = [
 _LABEL_COLORS: Dict[str, Tuple[int, int, int]] = {}
 
 try:
-    _FONT = ImageFont.truetype("G:\\A_Share\\YOLO-Model-Test\\DejaVuSans.ttf", 20)
+    _FONT = ImageFont.truetype("DejaVuSans.ttf", 20)
     print("truetype 字体加载成功！")
 except Exception as e:
     print("truetype 字体加载失败，进入 except。错误：", e)

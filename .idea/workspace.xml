@@ -5,8 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="757978fc-c7d2-4851-a074-3aa64ec6cd9e" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/models/yolov8n_FastNet_250627_192.pt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/gui.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/gui.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DejaVuSans.ttf" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/DejaVuSans.ttf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/configs/default.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/configs/default.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/visualization.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/visualization.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -63,7 +66,7 @@
     "Python.visualization.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "main",
-    "last_opened_file_path": "G:/A_Share/YOLO-Model-Test",
+    "last_opened_file_path": "G:/A_Share/YOLO-Model-Test/models",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -74,11 +77,11 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="G:\A_Share\YOLO-Model-Test" />
       <recent name="G:\A_Share\YOLO-Model-Test\models" />
+      <recent name="G:\A_Share\YOLO-Model-Test\src\utils" />
+      <recent name="G:\A_Share\YOLO-Model-Test" />
       <recent name="G:\A_Share\YOLO-Model-Test\example" />
       <recent name="G:\A_Share\YOLO-Model-Test\test_data\test2" />
-      <recent name="G:\A_Share\YOLO-Model-Test\test_data\test1" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="G:\A_Share\YOLO-Model-Test\tests" />
@@ -241,7 +244,7 @@
       <updated>1751010007857</updated>
       <workItem from="1751010008951" duration="10653000" />
       <workItem from="1751265477723" duration="924000" />
-      <workItem from="1751267215879" duration="67421000" />
+      <workItem from="1751267215879" duration="70440000" />
     </task>
     <servers />
   </component>
