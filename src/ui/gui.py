@@ -201,7 +201,6 @@ def run_evaluation(
                 out_path = img_dir / rel
                 out_path.parent.mkdir(parents=True, exist_ok=True)
 
-                out_path = img_dir / Path(img_path).name
                 img.save(out_path)
 
             logging.info("Images saved to %s", img_dir)

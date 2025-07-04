@@ -5,12 +5,13 @@ import os
 from dataclasses import dataclass
 from pathlib import Path
 from typing import List
-
-from src.datasets.xml_loader import Box, parse_annotation
+import logging
+from src.datasets.xml_loader import Box
 
 try:
     from ultralytics import YOLO  # type: ignore
-except Exception:  # pragma: no cover - ultralytics may not be installed
+except Exception as exc:  # pragma: no cover - ultralytics may not be installed
+    logging.exception("Failed to import ultralytics YOLO: %s", exc)
     YOLO = None  # type: ignore
 
 
@@ -24,22 +25,24 @@ class Predictor:
     batch_size: int = 1
 
     def __post_init__(self) -> None:
-        if YOLO is not None:
+        """Load the YOLO model or abort if unavailable."""
+        if YOLO is None:
+            # Log the missing dependency and stop execution
+            logging.exception("ultralytics YOLO is not installed")
+            raise RuntimeError("YOLO library not available")
+
+        try:
             self.model = YOLO(self.model_path)
             self.model.conf = self.confidence
             self.model.overrides["imgsz"] = list(self.image_size)
-        else:
-            self.model = None
+        except Exception as exc:  # pragma: no cover - model loading may fail
+            logging.exception("Failed to load YOLO model: %s", exc)
+            raise
 
     def predict(self, image_path: str) -> List[Box]:
         """Run inference on a single image."""
         if self.model is None:
-            # Fallback: use ground truth annotation if available
-            xml_path = Path(image_path).with_suffix(".xml")
-            if xml_path.exists():
-                ann = parse_annotation(str(xml_path))
-                return ann.boxes
-            return []
+            raise RuntimeError("YOLO model is not initialized")
 
         results = self.model(image_path)
         boxes: List[Box] = []
@@ -62,7 +65,7 @@ class Predictor:
 
     def batch_predict(self, image_paths: List[str]) -> List[List[Box]]:
         if self.model is None:
-            return [self.predict(p) for p in image_paths]
+            raise RuntimeError("YOLO model is not initialized")
 
         results = self.model.predict(
             image_paths, imgsz=list(self.image_size), batch=self.batch_size
