@@ -89,4 +89,12 @@ YOLO-Model-Test/
 5. **补充单元测试**  
    仿照 `tests/` 目录的规划，为数据加载、模型推理和评估模块编写基础测试，确保后续修改不会破坏现有功能。
 6. **生成混淆矩阵**
-使用 `python src/confusion_cli.py --model models/best.pt --data test_data --output output` 运行，结果会写入 `output/test_data1/`（下次运行为 `test_data2/` 等），其中包含数据集下所有层级子文件夹以及整体数据的混淆矩阵和概率矩阵图像
+使用 `python src/confusion_cli.py --model models/best.pt --data test_data --output output` 运行，结果会写入 `output/test_data1/`（下次运行为 `test_data2/` 等），其中包含数据集下所有层级子文件夹以及整体数据的混淆矩阵和概率矩阵图像。
+7. **转换 XML 标注**
+   `tools/xml_to_txt.py` 可将 Pascal VOC XML 标注转为简易 TXT 格式，每行 `label xmin ymin xmax ymax`，加上 `--normalize` 可按图片尺寸归一化。
+
+   TXT 示例：
+
+   ```txt
+   person 741 1 1115 684
+   ```
