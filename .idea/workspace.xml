@@ -9,7 +9,6 @@
       <change beforePath="$PROJECT_DIR$/example/detect_yolov8_panda/detect_y8_pcdb.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/example/detect_yolov8_panda/detect_y8_pcdb.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/example/detect_yolov8_panda/detect_y8_pcdb.h" beforeDir="false" afterPath="$PROJECT_DIR$/example/detect_yolov8_panda/detect_y8_pcdb.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/example/detect_yolov8_panda/dla_detect_yolov8_pcdb.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/example/detect_yolov8_panda/dla_detect_yolov8_pcdb.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tools.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools/xml2txt.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -375,7 +374,7 @@
       <workItem from="1751265477723" duration="924000" />
       <workItem from="1751267215879" duration="74667000" />
       <workItem from="1751605793036" duration="1729000" />
-      <workItem from="1751853208660" duration="5110000" />
+      <workItem from="1751853208660" duration="6728000" />
     </task>
     <servers />
   </component>

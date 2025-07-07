@@ -29,6 +29,7 @@ using namespace std;
 #include "math.h"
 #include <Eigen/Dense>
 #include <sys/time.h>
+#include <algorithm>
 
 
 #define yolov8_CLASSES (6)
@@ -55,8 +56,7 @@ using namespace std;
 #define Input_IMG_W (1280.0)
 #define Input_IMG_H (720.0)
 
-#define max(a,b)    (((a) > (b)) ? (a) : (b))
-#define min(a,b)    (((a) < (b)) ? (a) : (b))
+// use standard std::max/std::min instead of macros to avoid conflicts
 static inline float logistic(float x){return (1.f / (1.f + exp(-x)));}
 
 

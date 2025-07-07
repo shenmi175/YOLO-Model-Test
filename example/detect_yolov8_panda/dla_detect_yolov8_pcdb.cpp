@@ -114,9 +114,9 @@ bool yolov8_parse_xml(const std::string& xml_path,
     }
 
     std::regex obj_re(
-        "<object>.*?<name>([^<]+)</name>.*?<xmin>([^<]+)</xmin>.*?<ymin>([^<]+)"
-        "</ymin>.*?<xmax>([^<]+)</xmax>.*?<ymax>([^<]+)</ymax>",
-        std::regex::icase | std::regex::dotall);
+        "<object>[\\s\\S]*?<name>([^<]+)</name>[\\s\\S]*?<xmin>([^<]+)</xmin>[\\s\\S]*?<ymin>([^<]+)"
+        "</ymin>[\\s\\S]*?<xmax>([^<]+)</xmax>[\\s\\S]*?<ymax>([^<]+)</ymax>",
+        std::regex::icase);
     auto it = std::sregex_iterator(content.begin(), content.end(), obj_re);
     auto end = std::sregex_iterator();
     for (; it != end; ++it) {
@@ -171,6 +171,7 @@ bool yolov8_parse_txt(const std::string& txt_path,
         b.ymax /= Input_IMG_H;
         b.score = 1.0f;
         boxes.push_back(b);
+        ok = true;
     }
     return ok
 }
@@ -309,6 +310,7 @@ int main(int argc,char *argv[])
                                            std::vector<int>(yolov8_CLASSES + 1, 0));
   };
   char imgNameCount[512];
+  cv::Mat imgSrc;
 
   struct  timeval    all_tv_start;
   struct  timeval    all_tv_end;

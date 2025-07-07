@@ -458,13 +458,13 @@ std::vector<yolov8_BboxInfo> yolov8_NMS(std::vector<yolov8_BboxInfo>& Bboxes) {
 
 float yolov8_calcIoU(yolov8_BboxInfo bbox1, yolov8_BboxInfo bbox2) {
     float ret=0.0;
-    const float intersection_xmin = max(bbox1.x, bbox2.x);
-    const float intersection_ymin = max(bbox1.y, bbox2.y);
-    const float intersection_xmax = min(bbox1.x + bbox1.width, bbox2.x + bbox2.width);
-    const float intersection_ymax = min(bbox1.y + bbox1.height, bbox2.y + bbox2.height);
+    const float intersection_xmin = std::max(bbox1.x, bbox2.x);
+    const float intersection_ymin = std::max(bbox1.y, bbox2.y);
+    const float intersection_xmax = std::min(bbox1.x + bbox1.width, bbox2.x + bbox2.width);
+    const float intersection_ymax = std::min(bbox1.y + bbox1.height, bbox2.y + bbox2.height);
     const float intersection_area =
-      max(intersection_ymax - intersection_ymin, 0.0) *
-      max(intersection_xmax - intersection_xmin, 0.0);
+      std::max(intersection_ymax - intersection_ymin, 0.0f) *
+      std::max(intersection_xmax - intersection_xmin, 0.0f);
     const float union_area = (bbox1.width * bbox1.height) + (bbox2.width * bbox2.height) - intersection_area;
     
     ret = intersection_area / union_area;
