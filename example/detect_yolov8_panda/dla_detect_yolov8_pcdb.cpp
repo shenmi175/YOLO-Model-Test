@@ -21,7 +21,6 @@ using namespace std;
 #include <regex>
 #include <algorithm>
 
-namespace fs = std::filesystem;
 
 static std::vector<std::string> yolov8_labels = {
     "person", "cat", "dog", "catface", "dogface", "hand", "background"};
@@ -91,38 +90,42 @@ static std::string yolov8_relative(const std::string& path,
 }
 
 
-bool yolov8_parse_xml(const std::string& xml_path,
+static std::string yolov8_replace_extension(const std::string& path,
+                                             const std::string& ext) {
+    size_t pos = path.find_last_of('.');
+    if (pos == std::string::npos) return path + ext;
+    return path.substr(0, pos) + ext;
+}
+
+static std::string yolov8_parent_dir(const std::string& path) {
+    size_t pos = path.find_last_of('/');
+    if (pos == std::string::npos) return std::string();
+    return path.substr(0, pos);
+}
+
+static std::string yolov8_relative(const std::string& path,
+                                   const std::string& base) {
+    if (path.compare(0, base.size(), base) == 0) {
+        std::string rel = path.substr(base.size());
+        if (!rel.empty() && (rel[0] == '/' || rel[0] == '\\'))
+            rel.erase(0, 1);
+        return rel;
+    }
+    return path;
+}
+
+
+bool yolov8_parse_txt(const std::string& txt_path,
                       std::vector<yolov8_DetectionBBoxInfo>& boxes,
                       const std::map<std::string, int>& label_map) {
-    std::ifstream ifs(xml_path);
+    std::ifstream ifs(txt_path.c_str());
     if (!ifs.is_open())
         return false;
-    std::string content((std::istreambuf_iterator<char>(ifs)),
-                        std::istreambuf_iterator<char>());
-
-    std::regex size_re("<size>.*?<width>([^<]+)</width>.*?<height>([^<]+)</height>",
-                       std::regex::icase | std::regex::dotall);
-    std::smatch msize;
-    float w = Input_IMG_W;
-    float h = Input_IMG_H;
-    if (std::regex_search(content, msize, size_re)) {
-        try {
-            w = std::stof(msize[1]);
-            h = std::stof(msize[2]);
-        } catch (...) {
-        }
-    }
-
-    std::regex obj_re(
-        "<object>[\\s\\S]*?<name>([^<]+)</name>[\\s\\S]*?<xmin>([^<]+)</xmin>[\\s\\S]*?<ymin>([^<]+)"
-        "</ymin>[\\s\\S]*?<xmax>([^<]+)</xmax>[\\s\\S]*?<ymax>([^<]+)</ymax>",
-        std::regex::icase);
-    auto it = std::sregex_iterator(content.begin(), content.end(), obj_re);
-    auto end = std::sregex_iterator();
-    for (; it != end; ++it) {
-        std::smatch m = *it;
-        auto name = m[1].str();
-        if (label_map.count(name) == 0)
+    std::string label;
+    float x1, y1, x2, y2;
+    bool ok = false;
+    while (ifs >> label >> x1 >> y1 >> x2 >> y2) {
+        if (label_map.count(label) == 0)
             continue;
         yolov8_DetectionBBoxInfo b{};
         b.classID = label_map.at(name);
@@ -173,7 +176,7 @@ bool yolov8_parse_txt(const std::string& txt_path,
         boxes.push_back(b);
         ok = true;
     }
-    return ok
+    return ok;
 }
 
 static float yolov8_iou(const yolov8_DetectionBBoxInfo& a,
