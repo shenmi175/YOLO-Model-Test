@@ -98,3 +98,6 @@ YOLO-Model-Test/
    ```txt
    person 741 1 1115 684
    ```
+   开发板示例 `example/detect_yolov8_panda/dla_detect_yolov8_pcdb.cpp` 已更新，可递归
+   遍历多级目录并读取 `tools/xml_to_txt.py` 生成的 TXT 标注文件，输出与 Python
+   脚本相同结构的混淆矩阵。

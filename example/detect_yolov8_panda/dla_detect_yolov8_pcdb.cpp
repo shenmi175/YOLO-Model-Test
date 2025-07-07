@@ -90,59 +90,6 @@ static std::string yolov8_relative(const std::string& path,
 }
 
 
-static std::string yolov8_replace_extension(const std::string& path,
-                                             const std::string& ext) {
-    size_t pos = path.find_last_of('.');
-    if (pos == std::string::npos) return path + ext;
-    return path.substr(0, pos) + ext;
-}
-
-static std::string yolov8_parent_dir(const std::string& path) {
-    size_t pos = path.find_last_of('/');
-    if (pos == std::string::npos) return std::string();
-    return path.substr(0, pos);
-}
-
-static std::string yolov8_relative(const std::string& path,
-                                   const std::string& base) {
-    if (path.compare(0, base.size(), base) == 0) {
-        std::string rel = path.substr(base.size());
-        if (!rel.empty() && (rel[0] == '/' || rel[0] == '\\'))
-            rel.erase(0, 1);
-        return rel;
-    }
-    return path;
-}
-
-
-bool yolov8_parse_txt(const std::string& txt_path,
-                      std::vector<yolov8_DetectionBBoxInfo>& boxes,
-                      const std::map<std::string, int>& label_map) {
-    std::ifstream ifs(txt_path.c_str());
-    if (!ifs.is_open())
-        return false;
-    std::string label;
-    float x1, y1, x2, y2;
-    bool ok = false;
-    while (ifs >> label >> x1 >> y1 >> x2 >> y2) {
-        if (label_map.count(label) == 0)
-            continue;
-        yolov8_DetectionBBoxInfo b{};
-        b.classID = label_map.at(name);
-        try {
-            b.xmin = std::stof(m[2]) * Input_IMG_W / w;
-            b.ymin = std::stof(m[3]) * Input_IMG_H / h;
-            b.xmax = std::stof(m[4]) * Input_IMG_W / w;
-            b.ymax = std::stof(m[5]) * Input_IMG_H / h;
-        } catch (...) {
-            continue;
-        }
-        b.score = 1.0f;
-    boxes.push_back(b);
-  }
-  return !boxes.empty();
-}
-
 bool yolov8_parse_txt(const std::string& txt_path,
                       std::vector<yolov8_DetectionBBoxInfo>& boxes,
                       const std::map<std::string, int>& label_map) {
