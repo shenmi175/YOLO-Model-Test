@@ -139,6 +139,11 @@ std::vector<std::string> yolov8_collect_images(const std::string& root);
 bool yolov8_parse_xml(const std::string& xml_path,
                       std::vector<yolov8_DetectionBBoxInfo>& boxes,
                       const std::map<std::string, int>& label_map);
+
+bool yolov8_parse_txt(const std::string& txt_path,
+                      std::vector<yolov8_DetectionBBoxInfo>& boxes,
+                      const std::map<std::string, int>& label_map);
+
 void yolov8_update_confusion(std::vector<std::vector<int>>& matrix,
                              const std::vector<yolov8_DetectionBBoxInfo>& preds,
                              const std::vector<yolov8_DetectionBBoxInfo>& gts);

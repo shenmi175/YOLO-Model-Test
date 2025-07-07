@@ -17,26 +17,79 @@
 using namespace std;
 #include "detect_y8_pcdb.h"
 
-#include <filesystem>
+#include <dirent.h>
 #include <regex>
+#include <algorithm>
 
 namespace fs = std::filesystem;
 
 static std::vector<std::string> yolov8_labels = {
     "person", "cat", "dog", "catface", "dogface", "hand", "background"};
 
+static bool yolov8_is_image(const std::string& name) {
+    std::string ext;
+    size_t pos = name.find_last_of('.');
+    if (pos != std::string::npos) {
+        ext = name.substr(pos);
+        std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+    }
+    return ext == ".jpg" || ext == ".jpeg" || ext == ".png";
+}
+
 std::vector<std::string> yolov8_collect_images(const std::string& root) {
     std::vector<std::string> files;
-    for (auto const& entry : fs::recursive_directory_iterator(root)) {
-        if (!entry.is_regular_file())
+    std::vector<std::string> dirs{root};
+    while (!dirs.empty()) {
+        std::string dir = dirs.back();
+        dirs.pop_back();
+        DIR* dp = opendir(dir.c_str());
+        if (!dp)
             continue;
-        auto ext = entry.path().extension().string();
-        if (ext == ".jpg" || ext == ".png" || ext == ".jpeg") {
-            files.push_back(entry.path().string());
+        struct dirent* entry;
+        while ((entry = readdir(dp)) != NULL) {
+            std::string name(entry->d_name);
+            if (name == "." || name == "..")
+                continue;
+            std::string path = dir + "/" + name;
+            struct stat st{};
+            if (stat(path.c_str(), &st) != 0)
+                continue;
+            if (S_ISDIR(st.st_mode)) {
+                dirs.push_back(path);
+            } else if (S_ISREG(st.st_mode)) {
+                if (yolov8_is_image(name))
+                    files.push_back(path);
+            }
         }
+        closedir(dp);
     }
     return files;
 }
+
+static std::string yolov8_replace_extension(const std::string& path,
+                                             const std::string& ext) {
+    size_t pos = path.find_last_of('.');
+    if (pos == std::string::npos) return path + ext;
+    return path.substr(0, pos) + ext;
+}
+
+static std::string yolov8_parent_dir(const std::string& path) {
+    size_t pos = path.find_last_of('/');
+    if (pos == std::string::npos) return std::string();
+    return path.substr(0, pos);
+}
+
+static std::string yolov8_relative(const std::string& path,
+                                   const std::string& base) {
+    if (path.compare(0, base.size(), base) == 0) {
+        std::string rel = path.substr(base.size());
+        if (!rel.empty() && (rel[0] == '/' || rel[0] == '\\'))
+            rel.erase(0, 1);
+        return rel;
+    }
+    return path;
+}
+
 
 bool yolov8_parse_xml(const std::string& xml_path,
                       std::vector<yolov8_DetectionBBoxInfo>& boxes,
@@ -82,9 +135,44 @@ bool yolov8_parse_xml(const std::string& xml_path,
             continue;
         }
         b.score = 1.0f;
+    boxes.push_back(b);
+  }
+  return !boxes.empty();
+}
+
+bool yolov8_parse_txt(const std::string& txt_path,
+                      std::vector<yolov8_DetectionBBoxInfo>& boxes,
+                      const std::map<std::string, int>& label_map) {
+    std::ifstream ifs(txt_path.c_str());
+    if (!ifs.is_open())
+        return false;
+    std::string label;
+    float x1, y1, x2, y2;
+    bool ok = false;
+    while (ifs >> label >> x1 >> y1 >> x2 >> y2) {
+        if (label_map.count(label) == 0)
+            continue;
+        yolov8_DetectionBBoxInfo b{};
+        b.classID = label_map.at(label);
+        if (x1 <= 1 && y1 <= 1 && x2 <= 1 && y2 <= 1) {
+            b.xmin = x1 * Input_IMG_W;
+            b.ymin = y1 * Input_IMG_H;
+            b.xmax = x2 * Input_IMG_W;
+            b.ymax = y2 * Input_IMG_H;
+        } else {
+            b.xmin = x1;
+            b.ymin = y1;
+            b.xmax = x2;
+            b.ymax = y2;
+        }
+        b.xmin /= Input_IMG_W;
+        b.ymin /= Input_IMG_H;
+        b.xmax /= Input_IMG_W;
+        b.ymax /= Input_IMG_H;
+        b.score = 1.0f;
         boxes.push_back(b);
     }
-    return !boxes.empty();
+    return ok
 }
 
 static float yolov8_iou(const yolov8_DetectionBBoxInfo& a,
@@ -243,11 +331,12 @@ int main(int argc,char *argv[])
                 InputTensorVector,
                 OutputTensorVector,
                 desc);
-    fs::path xml_path = fs::path(imgPath).replace_extension(".xml");
-    if (fs::exists(xml_path)) {
+    std::string txt_path = yolov8_replace_extension(imgPath, ".txt");
+    struct stat st{};
+    if (stat(txt_path.c_str(), &st) == 0) {
       std::vector<yolov8_DetectionBBoxInfo> gt_boxes;
-      if (yolov8_parse_xml(xml_path.string(), gt_boxes, label_map)) {
-        std::string folder = fs::relative(xml_path.parent_path(), pImagePath).string();
+      if (yolov8_parse_txt(txt_path, gt_boxes, label_map)) {
+        std::string folder = yolov8_relative(yolov8_parent_dir(txt_path), pImagePath);
         if(folder.empty()) folder = "root";
         if(!confusion.count(folder)) confusion[folder] = init_matrix();
         if(!confusion.count("overall")) confusion["overall"] = init_matrix();
@@ -286,10 +375,10 @@ int main(int argc,char *argv[])
   for (auto& kv : confusion) {
     std::string folder = kv.first;
     std::vector<std::vector<int>>& mat = kv.second;
-    fs::path out_dir = fs::path(pImagePath) / folder / "eval";
-    fs::create_directories(out_dir);
-    fs::path out_path = out_dir / "confusion_matrix.png";
-    yolov8_draw_confusion(mat, yolov8_labels, out_path.string());
+    std::string out_dir = std::string(pImagePath) + "/" + folder + "/eval";
+    yolov8_mkpath(out_dir);
+    std::string out_path = out_dir + "/confusion_matrix.png";
+    yolov8_draw_confusion(mat, yolov8_labels, out_path);
   }
 
   return 0;

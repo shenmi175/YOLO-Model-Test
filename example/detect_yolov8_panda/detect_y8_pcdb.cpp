@@ -8,13 +8,24 @@ const std::vector<std::string> yolov8_class_names = {
 
 int yolov8_mkpath(std::string sDir, mode_t mode)
 {
-  int mdret;
-  
-  if((mdret = ::mkdir(sDir.c_str(), mode)) && errno!=EEXIST){
-    return mdret;
+  if (sDir.empty())
+    return -1;
+  char tmp[256];
+  snprintf(tmp, sizeof(tmp), "%s", sDir.c_str());
+  size_t len = strlen(tmp);
+  if (tmp[len - 1] == '/')
+    tmp[len - 1] = 0;
+  for (char* p = tmp + 1; *p; ++p) {
+    if (*p == '/') {
+      *p = 0;
+      if (::mkdir(tmp, mode) && errno != EEXIST)
+        return -1;
+      *p = '/';
+    }
   }
-  
-  return mdret;
+  if (::mkdir(tmp, mode) && errno != EEXIST)
+    return -1;
+  return 0;
 }
 
 void yolov8_WriteVisualizeBBox(string strImageName,
