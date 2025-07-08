@@ -23,7 +23,7 @@ using namespace std;
 
 
 static std::vector<std::string> yolov8_labels = {
-    "person", "cat", "dog", "catface", "dogface", "hand", "background"};
+    "person", "cat", "dog", "catface", "dogface", "hand", "face","background"};
 
 static bool yolov8_is_image(const std::string& name) {
     std::string ext;
@@ -187,17 +187,16 @@ void yolov8_draw_confusion(const std::vector<std::vector<int>>& matrix,
                            const std::vector<std::string>& labels,
                            const std::string& save_path) {
     int n = labels.size();
-    int cell = 60;
+    const cell = 60;
     cv::Mat img((n + 1) * cell, (n + 1) * cell, CV_8UC3, cv::Scalar(255, 255, 255));
 
     int max_val = 0;
     for (auto const& row : matrix) {
-        for (auto v : row)
-            if (v > max_val)
-                max_val = v;
+        for (int v : row)
+            max_val = std::max(max_val, v);
     }
     max_val = std::max(1, max_val);
-
+    // axis tick labels
     for (int i = 0; i < n; ++i) {
         cv::putText(img, labels[i], cv::Point((i + 1) * cell + 5, cell - 5),
                     cv::FONT_HERSHEY_SIMPLEX, 0.4, cv::Scalar(0, 0, 0), 1);
@@ -205,12 +204,20 @@ void yolov8_draw_confusion(const std::vector<std::vector<int>>& matrix,
                     cv::FONT_HERSHEY_SIMPLEX, 0.4, cv::Scalar(0, 0, 0), 1);
     }
 
+    // cells
     for (int r = 0; r < n; ++r) {
         for (int c = 0; c < n; ++c) {
             int val = matrix[r][c];
-            int intensity = 255 - static_cast<int>(255.0 * val / max_val);
+            int intensity = static_cast<int>(255.0 * val / max_val);
+            cv::Mat col; // single pixel color from colormap
+            cv::applyColorMap(cv::Mat(1, 1, CV_8U, cv::Scalar(intensity)), col, cv::COLORMAP_VIRIDIS);
+            cv::Scalar color = col.at<cv::Vec3b>(0, 0);
+
             cv::rectangle(img, cv::Rect((c + 1) * cell, (r + 1) * cell, cell, cell),
-                          cv::Scalar(intensity, intensity, 255), cv::FILLED);
+                          color, cv::FILLED);
+            cv::rectangle(img, cv::Rect((c + 1) * cell, (r + 1) * cell, cell, cell),
+                          cv::Scalar(0, 0, 0), 1);
+
             char buf[16];
             sprintf(buf, "%d", val);
             cv::putText(img, buf,
@@ -218,6 +225,16 @@ void yolov8_draw_confusion(const std::vector<std::vector<int>>& matrix,
                         cv::FONT_HERSHEY_SIMPLEX, 0.4, cv::Scalar(0, 0, 0), 1);
         }
     }
+
+     // axis names
+    cv::putText(img, "Predicted", cv::Point((n + 1) * cell / 2 - 40, (n + 1) * cell - 5),
+                cv::FONT_HERSHEY_SIMPLEX, 0.6, cv::Scalar(0, 0, 0), 2);
+    cv::Mat vert_text(100, 200, CV_8UC3, cv::Scalar(255, 255, 255));
+    cv::putText(vert_text, "True", cv::Point(0, 70),
+                cv::FONT_HERSHEY_SIMPLEX, 0.6, cv::Scalar(0, 0, 0), 2);
+    cv::Mat rot;
+    cv::rotate(vert_text, rot, cv::ROTATE_90_COUNTERCLOCKWISE);
+    rot.copyTo(img(cv::Rect(5, (n + 1) * cell / 2 - rot.rows / 2, rot.cols, rot.rows)));
 
     cv::imwrite(save_path, img);
 }
@@ -235,6 +252,17 @@ int main(int argc,char *argv[])
   char * pFirmwarePath = NULL;
   char * pModelImgPath = argv[1]; //model path
   char * pImagePath    = argv[2]; //image path
+
+  bool save_images = true;
+  if (argc >= 4) {
+    std::string arg = argv[3];
+    std::transform(arg.begin(), arg.end(), arg.begin(), ::tolower);
+    if (arg == "0" || arg == "false" || arg == "no" || arg == "nosave")
+      save_images = false;
+  }
+
+  std::string output_img_root = std::string(pImagePath) + "_rst";
+  std::string output_cm_root  = std::string(pImagePath) + "_eval";
 
   MI_U32 u32ChannelID  = 0;
   MI_IPU_SubNet_InputOutputDesc_t desc;
@@ -298,11 +326,11 @@ int main(int argc,char *argv[])
     }
     // usleep(77000);
 
-    gettimeofday(&all_tv_end,NULL); 
+    gettimeofday(&all_tv_end,NULL);
     all_elasped_time = (all_tv_end.tv_sec-all_tv_start.tv_sec)*1000+(all_tv_end.tv_usec-all_tv_start.tv_usec)/1000;
     cout<<"----------------------------> all time is:"<<all_elasped_time<<", "<< (float(all_elasped_time)) / 1000.0<<std::endl;
-    
-    //可视化结果 
+
+    //可视化结果
     std::cout << "detect_info.size()---:" << detect_info.size() << std::endl;
     for (unsigned int j = 0 ; j < detect_info.size();j++)
     {
@@ -316,18 +344,20 @@ int main(int argc,char *argv[])
         // std::cout << "xmax - xmin = " << len_x << "   " <<"ymax - ymin = " << len_y << endl;
         // std::cout << "len_x / len_y = " << len_x / len_y << endl;
     }
-    int show_result = 1;
-    if(show_result && detect_info.size() > 0)
+    if(save_images && detect_info.size() > 0)
     {
       vector<cv::Scalar> colors = yolov8_GetColors(yolov8_CLASSES);
-      yolov8_WriteVisualizeBBox(imgNameCount, detect_info, colors);
-    }  
+      std::string rel = yolov8_relative(imgPath, pImagePath);
+      std::string out_path = output_img_root + "/" + rel;
+      out_path = yolov8_replace_extension(out_path, ".png");
+      yolov8_WriteVisualizeBBox(imgNameCount, detect_info, colors, out_path);
+    }
   }
 
   for (auto& kv : confusion) {
     std::string folder = kv.first;
     std::vector<std::vector<int>>& mat = kv.second;
-    std::string out_dir = std::string(pImagePath) + "/" + folder + "/eval";
+    std::string out_dir = output_cm_root + "/" + folder;
     yolov8_mkpath(out_dir);
     std::string out_path = out_dir + "/confusion_matrix.png";
     yolov8_draw_confusion(mat, yolov8_labels, out_path);

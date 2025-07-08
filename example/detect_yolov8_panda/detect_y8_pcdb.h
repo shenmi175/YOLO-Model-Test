@@ -32,20 +32,20 @@ using namespace std;
 #include <algorithm>
 
 
-#define yolov8_CLASSES (6)
+#define yolov8_CLASSES (7)
 // #define yolov8_Num_box (5040)
 // #define yolov8_Num_box (2835)
 // #define yolov8_Num_box (2184)
-#define yolov8_Num_box (1260)
+#define yolov8_Num_box (5040)
 #define yolov8_CONF_THRESHOLD (0.50)
 #define yolov8_NMS_THRESHOLD (0.45)
 
 // 推理模型的宽高
 
-// #define MODEL_Y8_W (640.0)
-// #define MODEL_Y8_H (384.0)
-#define MODEL_Y8_W (320.0)
-#define MODEL_Y8_H (192.0)
+#define MODEL_Y8_W (640.0)
+#define MODEL_Y8_H (384.0)
+// #define MODEL_Y8_W (320.0)
+// #define MODEL_Y8_H (192.0)
 // #define MODEL_Y8_W (416.0)
 // #define MODEL_Y8_H (256.0)
 // #define MODEL_Y8_W (320.0)
@@ -77,7 +77,7 @@ struct yolov8_BboxInfo {
   int   classID;
 };
 
-struct yolov8_hand_info 
+struct yolov8_hand_info
 {
   float xmin;
   float ymin;
@@ -85,28 +85,28 @@ struct yolov8_hand_info
   float ymax;
   float area;
   float dis;
-  float way; 
+  float way;
   float angle;
   int   classID;
 };
 
-std::vector<yolov8_DetectionBBoxInfo> yolov8_infer_postprocess(cv::Mat imgSrc, 
+std::vector<yolov8_DetectionBBoxInfo> yolov8_infer_postprocess(cv::Mat imgSrc,
                           MI_U32 &u32ChannelID,
                           MI_IPU_TensorVector_t &InputTensorVector,
                           MI_IPU_TensorVector_t &OutputTensorVector,
                           MI_IPU_SubNet_InputOutputDesc_t &desc);
-// load model                            
-void yolov8_load_detection_model(char *pModelImgPath, 
+// load model
+void yolov8_load_detection_model(char *pModelImgPath,
                           MI_U32 &u32ChannelID,
                           MI_IPU_TensorVector_t &InputTensorVector,
                           MI_IPU_TensorVector_t &OutputTensorVector,
-                          MI_IPU_OfflineModelStaticInfo_t &OfflineModelInfo, 
+                          MI_IPU_OfflineModelStaticInfo_t &OfflineModelInfo,
                           MI_IPU_SubNet_InputOutputDesc_t &desc);
 //preprocess img
 cv::Mat yolov8_preprocess_img(cv::Mat &img, int input_w, int input_h, std::vector<int> &padsize);
 
 //model infer
-void yolov8_infer(cv::Mat imgDst, 
+void yolov8_infer(cv::Mat imgDst,
                           MI_U32 &u32ChannelID,
                           MI_IPU_TensorVector_t &InputTensorVector,
                           MI_IPU_TensorVector_t &OutputTensorVector,
@@ -127,9 +127,10 @@ std::vector<yolov8_DetectionBBoxInfo>  yolov8_GetDetections(std::vector<yolov8_B
 //WriteVisualizeBBox
 vector<cv::Scalar> yolov8_GetColors(const int n);
 cv::Scalar yolov8_HSV2RGB(const int i);
-void yolov8_WriteVisualizeBBox(string strImageName,
-                   const vector<yolov8_DetectionBBoxInfo > detections,
-                   const vector<cv::Scalar>& colors);
+void yolov8_WriteVisualizeBBox(const std::string& srcImagePath,
+  const std::vector<yolov8_DetectionBBoxInfo>& detections,
+  const std::vector<cv::Scalar>& colors,
+  const std::string& savePath);
                   
 int yolov8_mkpath(std::string sDir, mode_t mode=0777);
 

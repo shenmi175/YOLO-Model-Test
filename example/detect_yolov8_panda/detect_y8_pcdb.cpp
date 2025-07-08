@@ -1,10 +1,15 @@
-
 using namespace std;
 #include "detect_y8_pcdb.h"
 #include <sys/stat.h>
 
+static std::string yolov8_parent_dir(const std::string& path) {
+    size_t pos = path.find_last_of('/');
+    if (pos == std::string::npos) return std::string();
+    return path.substr(0, pos);
+}
+
 const std::vector<std::string> yolov8_class_names = {
-    "person", "cat", "dog", "catface", "dogface", "hand"};
+    "person", "cat", "dog", "catface", "dogface", "hand","face"};
 
 int yolov8_mkpath(std::string sDir, mode_t mode)
 {
@@ -28,44 +33,19 @@ int yolov8_mkpath(std::string sDir, mode_t mode)
   return 0;
 }
 
-void yolov8_WriteVisualizeBBox(string strImageName,
-                   const vector<yolov8_DetectionBBoxInfo > detections,
-                   const vector<cv::Scalar>& colors)
+void yolov8_WriteVisualizeBBox(const std::string& strImageName,
+                   const std::vector<yolov8_DetectionBBoxInfo>& detections,
+                   const std::vector<cv::Scalar>& colors,
+                   const std::string& savePath)
 {
     cv::Mat image = cv::imread(strImageName, -1);
+    if(image.empty()) return;
     map<int, vector<yolov8_DetectionBBoxInfo> > detectionsInImage;
     char buffer[50];
 
-    std::string name = strImageName;
-    // cout << "name---" << name <<endl;
-    unsigned int pos = strImageName.rfind("/");
-    if (pos > 0 && pos < strImageName.size()) {
-        name = name.substr(pos + 1);
-    }
-    int pos1 = 0;
-    int i = 0;
-    int dirNamePosStart = 0;
-    int dirNamePosEnd = -1;
-    while((pos1 = strImageName.find("/", pos1)) != string::npos)
-    {
-      dirNamePosStart = dirNamePosEnd;
-      dirNamePosEnd = pos1;
-      pos1 ++;
-      i ++;
-    }
-    std::string savedir(strImageName.substr(dirNamePosStart + 1, dirNamePosEnd - dirNamePosStart - 1) + "Rst");
-    int ret = yolov8_mkpath(savedir);
-    if (ret == 0){
 
-    }else if (ret == -1){
+    yolov8_mkpath(yolov8_parent_dir(savePath));
 
-    }
-    std::string strOutImageName = name;
-    
-    strOutImageName = strOutImageName.replace(strOutImageName.size()-4, 4, ".png");
-    cout << "strOutImageName---" << strOutImageName << endl;
-    char saveName[128];
-    sprintf(saveName, "%s/%s", savedir.c_str(), strOutImageName.c_str());
     for (unsigned int j = 0; j < detections.size(); j++) {
         yolov8_DetectionBBoxInfo bbox;
         const int label = detections[j].classID;
@@ -83,15 +63,15 @@ void yolov8_WriteVisualizeBBox(string strImageName,
         const cv::Scalar& color = colors[label];
 
         cv::rectangle(image, top_left_pt, bottom_right_pt, color, 2);
-        
+
 
         std ::string classname = yolov8_class_names[label];
         snprintf(buffer, sizeof(buffer), "%s: %.2f", classname.c_str(), score);
         cv::putText(image, buffer, cv::Point(int(bbox.xmin), int(bbox.ymax)), cv::FONT_HERSHEY_SIMPLEX, 1, CV_RGB(128, 0, 128), 2, 8);
 
-        
+
     }
-    cv::imwrite(saveName, image);
+    cv::imwrite(savePath, image);
 
 }
 
