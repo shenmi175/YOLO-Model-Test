@@ -20,6 +20,7 @@ using namespace std;
 #include <dirent.h>
 #include <regex>
 #include <algorithm>
+#include <sstream>
 
 
 static std::vector<std::string> yolov8_labels = {
@@ -187,7 +188,7 @@ void yolov8_draw_confusion(const std::vector<std::vector<int>>& matrix,
                            const std::vector<std::string>& labels,
                            const std::string& save_path) {
     int n = labels.size();
-    const cell = 60;
+    const int cell = 60;
     cv::Mat img((n + 1) * cell, (n + 1) * cell, CV_8UC3, cv::Scalar(255, 255, 255));
 
     int max_val = 0;
@@ -226,15 +227,15 @@ void yolov8_draw_confusion(const std::vector<std::vector<int>>& matrix,
         }
     }
 
-     // axis names
-    cv::putText(img, "Predicted", cv::Point((n + 1) * cell / 2 - 40, (n + 1) * cell - 5),
+     // axis names placed just outside the grid
+    cv::putText(img, "Predicted", cv::Point((n + 1) * cell / 2 - 40, (n + 1) * cell - 10),
                 cv::FONT_HERSHEY_SIMPLEX, 0.6, cv::Scalar(0, 0, 0), 2);
     cv::Mat vert_text(100, 200, CV_8UC3, cv::Scalar(255, 255, 255));
     cv::putText(vert_text, "True", cv::Point(0, 70),
                 cv::FONT_HERSHEY_SIMPLEX, 0.6, cv::Scalar(0, 0, 0), 2);
     cv::Mat rot;
     cv::rotate(vert_text, rot, cv::ROTATE_90_COUNTERCLOCKWISE);
-    rot.copyTo(img(cv::Rect(5, (n + 1) * cell / 2 - rot.rows / 2, rot.cols, rot.rows)));
+    rot.copyTo(img(cv::Rect(10, (n + 1) * cell / 2 - rot.rows / 2, rot.cols, rot.rows)));
 
     cv::imwrite(save_path, img);
 }
@@ -318,10 +319,27 @@ int main(int argc,char *argv[])
       if (yolov8_parse_txt(txt_path, gt_boxes, label_map)) {
         std::string folder = yolov8_relative(yolov8_parent_dir(txt_path), pImagePath);
         if(folder.empty()) folder = "root";
-        if(!confusion.count(folder)) confusion[folder] = init_matrix();
-        if(!confusion.count("overall")) confusion["overall"] = init_matrix();
-        yolov8_update_confusion(confusion[folder], detect_info, gt_boxes);
-        yolov8_update_confusion(confusion["overall"], detect_info, gt_boxes);
+        auto update_matrix = [&](const std::string& key){
+            if(!confusion.count(key))
+              confusion[key] = init_matrix();
+            yolov8_update_confusion(confusion[key], detect_info, gt_boxes);
+          };
+          std::string accum;
+          std::stringstream ss(folder);
+          std::string seg;
+          if(folder == "root") {
+            update_matrix("root");
+          } else {
+            while(std::getline(ss, seg, '/')) {
+              if(accum.empty())
+                accum = seg;
+              else
+                accum += "/" + seg;
+              update_matrix(accum);
+            }
+            update_matrix("root");
+          }
+          update_matrix("overall");
       }
     }
     // usleep(77000);
