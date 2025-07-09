@@ -24,7 +24,7 @@ using namespace std;
 
 
 static std::vector<std::string> yolov8_labels = {
-    "person", "cat", "dog", "catface", "dogface", "hand", "face","background"};
+    "person", "cat", "dog", "catface", "dogface", "hand", "background"};
 
 static bool yolov8_is_image(const std::string& name) {
     std::string ext;
@@ -301,7 +301,14 @@ int main(int argc,char *argv[])
     sprintf(imgNameCount, "%s", imgPath.c_str());
 
     imgSrc = cv::imread(imgNameCount);
-
+    if (imgSrc.empty()) {
+        std::cerr << "Failed to read image: " << imgNameCount << std::endl;
+        std::cerr << "读取图片失败: " << imgNameCount << std::endl;
+        continue;
+      }
+    //----------------------------------
+    cv::cvtColor(imgSrc,imgSrc, cv::COLOR_BGR2RGB);
+    //----------------------------------
     gettimeofday(&all_tv_start,NULL);
 
     std::cout<<"Opencv Version:" << CV_VERSION << endl;
@@ -344,11 +351,11 @@ int main(int argc,char *argv[])
     }
     // usleep(77000);
 
-    gettimeofday(&all_tv_end,NULL);
+    gettimeofday(&all_tv_end,NULL); 
     all_elasped_time = (all_tv_end.tv_sec-all_tv_start.tv_sec)*1000+(all_tv_end.tv_usec-all_tv_start.tv_usec)/1000;
     cout<<"----------------------------> all time is:"<<all_elasped_time<<", "<< (float(all_elasped_time)) / 1000.0<<std::endl;
-
-    //可视化结果
+    
+    //可视化结果 
     std::cout << "detect_info.size()---:" << detect_info.size() << std::endl;
     for (unsigned int j = 0 ; j < detect_info.size();j++)
     {

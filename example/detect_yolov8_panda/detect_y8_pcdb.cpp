@@ -9,7 +9,7 @@ static std::string yolov8_parent_dir(const std::string& path) {
 }
 
 const std::vector<std::string> yolov8_class_names = {
-    "person", "cat", "dog", "catface", "dogface", "hand","face"};
+    "person", "cat", "dog", "catface", "dogface", "hand"};
 
 int yolov8_mkpath(std::string sDir, mode_t mode)
 {
@@ -50,26 +50,26 @@ void yolov8_WriteVisualizeBBox(const std::string& strImageName,
         yolov8_DetectionBBoxInfo bbox;
         const int label = detections[j].classID;
         const float score = detections[j].score;
-        bbox.xmin =  detections[j].xmin * image.cols;
+        bbox.xmin =  detections[j].xmin * Input_IMG_W;
         bbox.xmin = bbox.xmin < 0 ? 0 : bbox.xmin ;
-        bbox.ymin =  detections[j].ymin * image.rows;
+        bbox.ymin =  detections[j].ymin * Input_IMG_H;
         bbox.ymin = bbox.ymin < 0 ? 0 : bbox.ymin ;
-        bbox.xmax =  detections[j].xmax * image.cols;
-        bbox.xmax = bbox.xmax > image.cols ? image.cols : bbox.xmax;
-        bbox.ymax =  detections[j].ymax * image.rows;
-        bbox.ymax = bbox.ymax > image.rows ? image.rows : bbox.ymax ;
+        bbox.xmax =  detections[j].xmax * Input_IMG_W;
+        bbox.xmax = bbox.xmax > Input_IMG_W ? Input_IMG_W : bbox.xmax;
+        bbox.ymax =  detections[j].ymax * Input_IMG_H;
+        bbox.ymax = bbox.ymax > Input_IMG_H ? Input_IMG_H : bbox.ymax ;
         cv::Point top_left_pt(int(bbox.xmin), int(bbox.ymin));
         cv::Point bottom_right_pt(int(bbox.xmax), int(bbox.ymax));
         const cv::Scalar& color = colors[label];
 
         cv::rectangle(image, top_left_pt, bottom_right_pt, color, 2);
-
+        
 
         std ::string classname = yolov8_class_names[label];
         snprintf(buffer, sizeof(buffer), "%s: %.2f", classname.c_str(), score);
         cv::putText(image, buffer, cv::Point(int(bbox.xmin), int(bbox.ymax)), cv::FONT_HERSHEY_SIMPLEX, 1, CV_RGB(128, 0, 128), 2, 8);
 
-
+        
     }
     cv::imwrite(savePath, image);
 
@@ -127,7 +127,10 @@ vector<cv::Scalar> yolov8_GetColors(const int n)
 #define INNER_MOST_ALIGNMENT (4)
 #define ALIGN_UP(val, alignment) ((( (val)+(alignment)-1)/(alignment))*(alignment))
 
-std::vector<yolov8_DetectionBBoxInfo>  yolov8_GetDetections(std::vector<yolov8_BboxInfo> output){
+std::vector<yolov8_DetectionBBoxInfo>  yolov8_GetDetections(
+  std::vector<yolov8_BboxInfo> output,
+  int img_w,
+  int img_h){
     std::vector<yolov8_DetectionBBoxInfo > detections;
     for(int i=0;i<output.size();i++)
     {
@@ -138,10 +141,10 @@ std::vector<yolov8_DetectionBBoxInfo>  yolov8_GetDetections(std::vector<yolov8_B
       detection.xmax =  output[i].x + output[i].width;
       detection.ymax =  output[i].y + output[i].height;
       //归一化
-      detection.xmin = detection.xmin / Input_IMG_W ;
-      detection.ymin = detection.ymin / Input_IMG_H ;
-      detection.xmax = detection.xmax / Input_IMG_W ;
-      detection.ymax = detection.ymax / Input_IMG_H ;
+      detection.xmin = detection.xmin / img_w;
+      detection.ymin = detection.ymin / img_h;
+      detection.xmax = detection.xmax / img_w;
+      detection.ymax = detection.ymax / img_h;
 
       detection.xmin = detection.xmin < 0 ? 0 : detection.xmin ;
       detection.ymin = detection.ymin < 0 ? 0 : detection.ymin ;
@@ -152,8 +155,10 @@ std::vector<yolov8_DetectionBBoxInfo>  yolov8_GetDetections(std::vector<yolov8_B
       
       detection.classID = output[i].classID;
 
-      const float len_x = (detection.xmax * Input_IMG_W) - (detection.xmin * Input_IMG_W);
-      const float len_y = (detection.ymax * Input_IMG_H) - (detection.ymin * Input_IMG_H);
+      const float len_x = (detection.xmax * img_w) - (detection.xmin * img_w);
+
+      const float len_y = (detection.ymax * img_h) - (detection.ymin * img_h);
+
       const float rio_p = len_x / len_y ;
       
       detections.push_back(detection);
@@ -238,11 +243,19 @@ std::vector<yolov8_DetectionBBoxInfo>  yolov8_infer_postprocess(cv::Mat imgSrc,
   int elasped_time;
   cv::Mat imgSrc1;
 
+  if (imgSrc.empty()) {
+    return std::vector<yolov8_DetectionBBoxInfo>();
+  }
+
   //preprocess_img
   gettimeofday(&tv_start, NULL);
   std::vector<int> padsize;
   // cv::cvtColor(imgSrc, imgSrc1, cv::COLOR_BGR2RGB);
   cv::Mat imgDst = yolov8_preprocess_img(imgSrc, MODEL_Y8_W, MODEL_Y8_H,padsize);
+  if (imgDst.empty()) {
+    std::cerr << "Preprocess failed for image" << std::endl;
+    return std::vector<yolov8_DetectionBBoxInfo>();
+  }
   // cout << "imgDst.size()----" << imgDst.size() << endl;
   gettimeofday(&tv_end,NULL);
   elasped_time = (tv_end.tv_sec-tv_start.tv_sec)*1000+(tv_end.tv_usec-tv_start.tv_usec)/1000;
@@ -364,13 +377,17 @@ std::vector<yolov8_DetectionBBoxInfo> yolov8_postprocess(cv::Mat imgSrc,std::vec
     std::vector<yolov8_BboxInfo> picked_boxes;
     picked_boxes = yolov8_NMS(Bboxes);
     // std :: cout << "picked_boxes.size()-------" << picked_boxes.size()<<std :: endl;
-    std::vector<yolov8_DetectionBBoxInfo> detections = yolov8_GetDetections(picked_boxes);
+    std::vector<yolov8_DetectionBBoxInfo> detections = yolov8_GetDetections(picked_boxes, imgSrc.cols, imgSrc.rows);
     
     return detections;
 
 }
 
 cv::Mat yolov8_preprocess_img(cv::Mat &img, int input_w, int input_h, std::vector<int> &padsize) {
+    if (img.empty() || img.cols <= 0 || img.rows <= 0) {
+    padsize.assign(4, 0);
+    return cv::Mat();
+  } 
     
     int w, h;
     int dw, dh;
@@ -387,6 +404,10 @@ cv::Mat yolov8_preprocess_img(cv::Mat &img, int input_w, int input_h, std::vecto
         dw = (input_w - w) / 2;
         dh = 0;
     }
+    if (w <= 0 || h <= 0) {
+      padsize.assign(4, 0);
+      return cv::Mat();
+  }
     // std :: cout << "w---h---dw---dh:"<< w << " " << h << " " << dw << " " << dh << std :: endl;
     // std :: cout << "---img.size()---:"<< img.size() << std::endl;
     cv::Mat re(h, w, CV_8UC3);
