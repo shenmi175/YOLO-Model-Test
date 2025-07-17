@@ -50,11 +50,25 @@ class AugmentationGUI:
         # 选择图片按钮
         self.select_btn = tk.Button(master, text="选择图片", command=self.helper.load_image)
         self.select_btn.grid(row=1, column=0, padx=10, pady=2, sticky='w')
+        tk.Label(master, text="增强根目录:").grid(row=2, column=0, sticky='e', padx=10)
+        self.input_root_var = tk.StringVar()
+        tk.Entry(master, textvariable=self.input_root_var, width=40).grid(row=2, column=1, sticky='w')
+        tk.Button(master, text="浏览", command=self.helper.browse_input_root).grid(row=2, column=2, sticky='w')
+
+        tk.Label(master, text="输出根目录:").grid(row=3, column=0, sticky='e', padx=10)
+        self.output_root_var = tk.StringVar()
+        tk.Entry(master, textvariable=self.output_root_var, width=40).grid(row=3, column=1, sticky='w')
+        tk.Button(master, text="浏览", command=self.helper.browse_output_root).grid(row=3, column=2, sticky='w')
+
+        tk.Label(master, text="增强数量:").grid(row=4, column=0, sticky='e', padx=10)
+        self.augment_count_var = tk.IntVar(value=1)
+        tk.Entry(master, textvariable=self.augment_count_var, width=10).grid(row=4, column=1, sticky='w')
+        tk.Button(master, text="开始增强", command=self.helper.batch_augment).grid(row=4, column=2, sticky='w')
 
         # ==== 可滚动参数区域 ====
         scroll_container = tk.Frame(master)
-        scroll_container.grid(row=2, column=0, columnspan=4, sticky='nsew')
-        master.grid_rowconfigure(2, weight=1)
+        scroll_container.grid(row=5, column=0, columnspan=4, sticky='nsew')
+        master.grid_rowconfigure(5, weight=1)
         master.grid_columnconfigure(0, weight=1)
 
         self.canvas = tk.Canvas(scroll_container, highlightthickness=0)
@@ -687,7 +701,7 @@ class AugmentationGUI:
     def build_Defocus_group(self, frame):
         self.use_Defocus = tk.BooleanVar(value=False)
         tk.Checkbutton(frame, text="启用", variable=self.use_Defocus, command=self.helper.update_preview).grid(row=0, column=0, sticky='w')
-        tk.Label(frame, text="radius:").grid(row=1, column=0, sticky='e')
+        tk.Label(frame, text="模糊半径:").grid(row=1, column=0, sticky='e')
         self.radius_min = tk.Scale(frame, from_=1, to=15, orient=tk.HORIZONTAL, length=100,
                                    command=lambda v: self.helper.slider_pair_link(self.radius_min, self.radius_max))
         self.radius_min.set(3)
@@ -696,7 +710,7 @@ class AugmentationGUI:
                                    command=lambda v: self.helper.slider_pair_link(self.radius_min, self.radius_max))
         self.radius_max.set(10)
         self.radius_max.grid(row=1, column=2, sticky='w')
-        tk.Label(frame, text="alias_blur:").grid(row=2, column=0, sticky='e')
+        tk.Label(frame, text="高斯模糊的标准偏差范围:").grid(row=2, column=0, sticky='e')
         self.alias_blur_min = tk.Scale(frame, from_=0.0, to=1.0, resolution=0.05, orient=tk.HORIZONTAL, length=100,
                                        command=lambda v: self.helper.slider_pair_link(self.alias_blur_min, self.alias_blur_max))
         self.alias_blur_min.set(0.1)
@@ -711,7 +725,7 @@ class AugmentationGUI:
     def build_ZoomBlur_group(self, frame):
         self.use_ZoomBlur = tk.BooleanVar(value=False)
         tk.Checkbutton(frame, text="启用", variable=self.use_ZoomBlur, command=self.helper.update_preview).grid(row=0, column=0, sticky='w')
-        tk.Label(frame, text="max_factor:").grid(row=1, column=0, sticky='e')
+        tk.Label(frame, text="模糊最大因子的范围:").grid(row=1, column=0, sticky='e')
         self.max_factor_min = tk.Scale(frame, from_=1.0, to=2.0, resolution=0.01, orient=tk.HORIZONTAL, length=100,
                                        command=lambda v: self.helper.slider_pair_link(self.max_factor_min, self.max_factor_max))
         self.max_factor_min.set(1.0)
@@ -720,7 +734,7 @@ class AugmentationGUI:
                                        command=lambda v: self.helper.slider_pair_link(self.max_factor_min, self.max_factor_max))
         self.max_factor_max.set(1.31)
         self.max_factor_max.grid(row=1, column=2, sticky='w')
-        tk.Label(frame, text="step_factor:").grid(row=2, column=0, sticky='e')
+        tk.Label(frame, text="步长参数:").grid(row=2, column=0, sticky='e')
         self.astep_factor_min = tk.Scale(frame, from_=0.01, to=0.1, resolution=0.01, orient=tk.HORIZONTAL, length=100,
                                          command=lambda v: self.helper.slider_pair_link(self.astep_factor_min, self.astep_factor_max))
         self.astep_factor_min.set(0.01)
@@ -735,10 +749,10 @@ class AugmentationGUI:
     def build_OpticalDistortion_group(self, frame):
         self.use_OpticalDistortion = tk.BooleanVar(value=False)
         tk.Checkbutton(frame, text="启用", variable=self.use_OpticalDistortion, command=self.helper.update_preview).grid(row=0, column=0, sticky='w')
-        tk.Label(frame, text="mode:").grid(row=1, column=0, sticky='e')
+        tk.Label(frame, text="扭曲模型:").grid(row=1, column=0, sticky='e')
         self.OpticalDistortion_mode_var = tk.StringVar(value="camera")
         tk.OptionMenu(frame, self.OpticalDistortion_mode_var, "camera", "fisheye", command=lambda _: self.helper.update_preview()).grid(row=1, column=1, sticky='w')
-        tk.Label(frame, text="distort_limit:").grid(row=2, column=0, sticky='e')
+        tk.Label(frame, text="扭曲系数的范围:").grid(row=2, column=0, sticky='e')
         self.distort_limit_min = tk.Scale(frame, from_=-0.3, to=0.3, resolution=0.01, orient=tk.HORIZONTAL, length=100,
                                           command=lambda v: self.helper.slider_pair_link(self.distort_limit_min, self.distort_limit_max))
         self.distort_limit_min.set(-0.05)

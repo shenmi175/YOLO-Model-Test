@@ -4,6 +4,11 @@ from PIL import Image, ImageTk
 import cv2
 import os
 import xml.etree.ElementTree as ET
+import logging
+from pathlib import Path
+
+from src.log_setup import setup_logging
+from utils.file_utils import ensure_dir, list_images
 
 class ToolTip:
     def __init__(self, widget, text):
@@ -42,6 +47,18 @@ class AugModeHelper:
         gui: 主界面AugmentationGUI类的实例
         """
         self.gui = gui
+
+
+    def browse_input_root(self):
+        path = filedialog.askdirectory()
+        if path:
+            self.gui.input_root_var.set(path)
+
+    def browse_output_root(self):
+        path = filedialog.askdirectory()
+        if path:
+            self.gui.output_root_var.set(path)
+
 
     def parse_voc_xml(self, xml_path):
         """
@@ -160,15 +177,22 @@ class AugModeHelper:
     # =======================
     # 预览更新
     # =======================
-    def update_preview(self):
-        if getattr(self.gui, 'orig_img', None) is None:
-            return
-        aug_img = self.gui.orig_img.copy()
-        bboxes = [box[:] for box in getattr(self.gui, 'bboxes', [])]
-        labels = getattr(self.gui, 'orig_labels', [])
+    # def update_preview(self):
+    #     if getattr(self.gui, 'orig_img', None) is None:
+    #         return
+    #     aug_img = self.gui.orig_img.copy()
+    #     bboxes = [box[:] for box in getattr(self.gui, 'bboxes', [])]
+    #     labels = getattr(self.gui, 'orig_labels', [])
+
+    def apply_transforms(self, image, bboxes, labels):
+        """Apply enabled transformations and return result with log list."""
+        aug_img = image.copy()
+        ops = []
 
         # 运动模糊
         if getattr(self.gui, 'use_motion_blur', None) and self.gui.use_motion_blur.get():
+            ops.append(
+                f"MotionBlur blur_limit={self.gui.blur_limit.get()} angle={self.gui.angle.get()} direction={self.gui.direction.get()}")
             aug_img, bboxes = self.gui.apply_motion_blur(
                 aug_img,
                 blur_limit=self.gui.blur_limit.get(),
@@ -181,6 +205,7 @@ class AugModeHelper:
 
         # 加性噪声
         if getattr(self.gui, 'use_add_noise', None) and self.gui.use_add_noise.get():
+            ops.append(f"AdditiveNoise type={self.gui.noise_type_var.get()} mode={self.gui.spatial_mode_var.get()}")
             aug_img, bboxes = self.gui.apply_AdditiveNoise(
                 aug_img,
                 noise_type=self.gui.noise_type_var.get(),
@@ -195,6 +220,7 @@ class AugModeHelper:
 
         # 灰度变换
         if getattr(self.gui, 'use_To_Gray', None) and self.gui.use_To_Gray.get():
+            ops.append(f"ToGray method={self.gui.To_Gray_var.get()}")
             aug_img, bboxes = self.gui.apply_ToGray(
                 aug_img,
                 method=self.gui.To_Gray_var.get(),
@@ -205,6 +231,7 @@ class AugModeHelper:
 
         # 普朗克抖动
         if getattr(self.gui, 'use_Planckian_Jitter', None) and self.gui.use_Planckian_Jitter.get():
+            ops.append(f"PlanckianJitter mode={self.gui.mode_var.get()} sampling={self.gui.sampling_method_var.get()}")
             aug_img, bboxes = self.gui.apply_PlanckianJitter(
                 aug_img,
                 mode=self.gui.mode_var.get(),
@@ -217,6 +244,7 @@ class AugModeHelper:
 
         # 浮雕效果
         if getattr(self.gui, 'use_Emboss', None) and self.gui.use_Emboss.get():
+            ops.append("Emboss")
             aug_img, bboxes = self.gui.apply_Emboss(
                 aug_img,
                 alpha=(self.gui.alpha_min.get(), self.gui.alpha_max.get()),
@@ -228,6 +256,7 @@ class AugModeHelper:
 
         # 应用散粒噪声
         if getattr(self.gui, 'use_ShotNoise', None) and self.gui.use_ShotNoise.get():
+            ops.append("ShotNoise")
             aug_img, bboxes = self.gui.apply_ShotNoise(
                 aug_img,
                 scale_range=(self.gui.scale_min.get(), self.gui.scale_max.get()),
@@ -238,6 +267,7 @@ class AugModeHelper:
 
         # 应用相机传感器噪声
         if getattr(self.gui, 'use_ISONoise', None) and self.gui.use_ISONoise.get():
+            ops.append("ISONoise")
             aug_img, bboxes = self.gui.apply_ISONoise(
                 aug_img,
                 color_shift=(self.gui.acolor_shift_min.get(), self.gui.color_shift_max.get()),
@@ -249,6 +279,7 @@ class AugModeHelper:
 
         # 应用改变色调、饱和度和明度
         if getattr(self.gui, 'use_HueSaturationValue', None) and self.gui.use_HueSaturationValue.get():
+            ops.append("HueSaturationValue")
             aug_img, bboxes = self.gui.apply_HueSaturationValue(
                 aug_img,
                 hue_shift_limit=(self.gui.hue_shift_limit_min.get(), self.gui.hue_shift_limit_max.get()),
@@ -261,6 +292,7 @@ class AugModeHelper:
 
         # 应用光照效果
         if getattr(self.gui, 'use_Illumination', None) and self.gui.use_Illumination.get():
+            ops.append("Illumination")
             aug_img, bboxes = self.gui.apply_Illumination(
                 aug_img,
                 Illumination_mode=self.gui.Illumination_mode_var.get(),
@@ -276,6 +308,7 @@ class AugModeHelper:
 
         # 应用失焦模糊
         if getattr(self.gui, 'use_Defocus', None) and self.gui.use_Defocus.get():
+            ops.append("Defocus")
             aug_img, bboxes = self.gui.apply_Defocus(
                 aug_img,
                 radius=(self.gui.radius_min.get(), self.gui.radius_max.get()),
@@ -287,6 +320,7 @@ class AugModeHelper:
 
         # 应用缩放模糊
         if getattr(self.gui, 'use_ZoomBlur', None) and self.gui.use_ZoomBlur.get():
+            ops.append("ZoomBlur")
             aug_img, bboxes = self.gui.apply_ZoomBlur(
                 aug_img,
                 max_factor=(self.gui.max_factor_min.get(), self.gui.max_factor_max.get()),
@@ -298,6 +332,7 @@ class AugModeHelper:
 
         # 应用光学扭曲
         if getattr(self.gui, 'use_OpticalDistortion', None) and self.gui.use_OpticalDistortion.get():
+            ops.append("OpticalDistortion")
             aug_img, bboxes = self.gui.apply_OpticalDistortion(
                 aug_img,
                 distort_limit=(self.gui.distort_limit_min.get(), self.gui.distort_limit_max.get()),
@@ -309,6 +344,70 @@ class AugModeHelper:
                 labels=labels,
             )
 
+        return aug_img, bboxes, ops
+
+    def update_preview(self):
+        if getattr(self.gui, 'orig_img', None) is None:
+            return
+        aug_img, bboxes, _ = self.apply_transforms(
+            self.gui.orig_img, [box[:] for box in getattr(self.gui, 'bboxes', [])], self.gui.orig_labels
+        )
+
         self.gui.aug_img = aug_img
         self.gui.bboxes = bboxes
-        self.show_image(aug_img, self.gui.aug_canvas, bboxes, labels)
+        self.show_image(aug_img, self.gui.aug_canvas, bboxes, self.gui.orig_labels)
+
+    def update_annotation(self, src_xml, dst_xml, bboxes, labels):
+        tree = ET.parse(src_xml)
+        root = tree.getroot()
+        objs = root.findall('object')
+        for i, obj in enumerate(objs):
+            if i >= len(bboxes):
+                break
+            bb = bboxes[i]
+            obj.find('bndbox/xmin').text = str(int(bb[0]))
+            obj.find('bndbox/ymin').text = str(int(bb[1]))
+            obj.find('bndbox/xmax').text = str(int(bb[2]))
+            obj.find('bndbox/ymax').text = str(int(bb[3]))
+            if labels:
+                obj.find('name').text = labels[i]
+        root.find('filename').text = os.path.basename(dst_xml).replace('.xml', '.jpg')
+        ensure_dir(Path(dst_xml).parent)
+        tree.write(dst_xml)
+
+    def batch_augment(self):
+        in_root = self.gui.input_root_var.get()
+        out_root = self.gui.output_root_var.get()
+        count = self.gui.augment_count_var.get()
+        if not in_root or not out_root:
+            messagebox.showerror("错误", "请设置输入和输出目录")
+            return
+        log_file = Path(out_root) / "augmentation.log"
+        setup_logging(str(log_file))
+        images = list_images(in_root)
+        if not images:
+            messagebox.showerror("错误", "未找到图片")
+            return
+        if count <= 0 or count > len(images):
+            count = len(images)
+        logging.info("Input root: %s", in_root)
+        logging.info("Output root: %s", out_root)
+        logging.info("Augment count: %d", count)
+        for idx, img_path in enumerate(images[:count], 1):
+            logging.info("[%d/%d] %s", idx, count, img_path)
+            img = cv2.imread(img_path)
+            base, _ = os.path.splitext(img_path)
+            xml_path = base + ".xml"
+            if os.path.exists(xml_path):
+                bboxes, labels = self.parse_voc_xml(xml_path)
+            else:
+                bboxes, labels = [], []
+            aug_img, aug_boxes, ops = self.apply_transforms(img, bboxes, labels)
+            rel = Path(img_path).relative_to(in_root)
+            out_img = Path(out_root) / rel
+            ensure_dir(out_img.parent)
+            cv2.imwrite(str(out_img), aug_img)
+            if os.path.exists(xml_path):
+                out_xml = out_img.with_suffix('.xml')
+                self.update_annotation(xml_path, str(out_xml), aug_boxes, labels)
+            logging.info("Ops: %s", "; ".join(ops))
