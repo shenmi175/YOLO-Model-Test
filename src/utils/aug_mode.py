@@ -2,7 +2,8 @@ import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 from PIL import Image, ImageTk
 import cv2
-
+import os
+import xml.etree.ElementTree as ET
 
 class ToolTip:
     def __init__(self, widget, text):
@@ -123,10 +124,21 @@ class AugModeHelper:
         if self.gui.orig_img is None:
             messagebox.showerror("错误", f"无法读取图片: {file_path}")
             return
-        self.show_image(self.gui.orig_img, self.gui.orig_canvas)
+        base, _ = os.path.splitext(file_path)
+        xml_path = base + ".xml"
+        if os.path.exists(xml_path):
+            bboxes, labels = self.parse_voc_xml(xml_path)
+        else:
+            bboxes, labels = [], []
+        self.gui.orig_bboxes = bboxes
+        self.gui.orig_labels = labels
+        self.gui.bboxes = bboxes.copy()
+        self.show_image(self.gui.orig_img, self.gui.orig_canvas, bboxes, labels)
         self.update_preview()
 
-    def show_image(self, img, canvas):
+    def show_image(self, img, canvas, bboxes=None, labels=None):
+        if bboxes is not None:
+            img = self.draw_boxes(img, bboxes, labels)
         img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         im_pil = Image.fromarray(img_rgb)
         im_pil = im_pil.resize((960, 540))
@@ -152,86 +164,104 @@ class AugModeHelper:
         if getattr(self.gui, 'orig_img', None) is None:
             return
         aug_img = self.gui.orig_img.copy()
+        bboxes = [box[:] for box in getattr(self.gui, 'bboxes', [])]
+        labels = getattr(self.gui, 'orig_labels', [])
 
         # 运动模糊
         if getattr(self.gui, 'use_motion_blur', None) and self.gui.use_motion_blur.get():
-            aug_img = self.gui.apply_motion_blur(
+            aug_img, bboxes = self.gui.apply_motion_blur(
                 aug_img,
                 blur_limit=self.gui.blur_limit.get(),
                 angle=self.gui.angle.get(),
                 direction=self.gui.direction.get(),
-                p=self.gui.blur_probability.get()
+                p=self.gui.blur_probability.get(),
+                bboxes=bboxes,
+                labels=labels,
             )
 
         # 加性噪声
         if getattr(self.gui, 'use_add_noise', None) and self.gui.use_add_noise.get():
-            aug_img = self.gui.apply_AdditiveNoise(
+            aug_img, bboxes = self.gui.apply_AdditiveNoise(
                 aug_img,
                 noise_type=self.gui.noise_type_var.get(),
                 spatial_mode=self.gui.spatial_mode_var.get(),
                 mean_range=(self.gui.mean_min.get(), self.gui.mean_max.get()),
                 std_range=(self.gui.std_min.get(), self.gui.std_max.get()),
                 approximation=self.gui.approximation.get(),
-                p=self.gui.add_noise_probability.get()
+                p=self.gui.add_noise_probability.get(),
+                bboxes=bboxes,
+                labels=labels,
             )
 
         # 灰度变换
         if getattr(self.gui, 'use_To_Gray', None) and self.gui.use_To_Gray.get():
-            aug_img = self.gui.apply_ToGray(
+            aug_img, bboxes = self.gui.apply_ToGray(
                 aug_img,
                 method=self.gui.To_Gray_var.get(),
-                p=self.gui.To_Gray_probability.get()
+                p=self.gui.To_Gray_probability.get(),
+                bboxes=bboxes,
+                labels=labels,
             )
 
         # 普朗克抖动
         if getattr(self.gui, 'use_Planckian_Jitter', None) and self.gui.use_Planckian_Jitter.get():
-            aug_img = self.gui.apply_PlanckianJitter(
+            aug_img, bboxes = self.gui.apply_PlanckianJitter(
                 aug_img,
                 mode=self.gui.mode_var.get(),
                 sampling_method=self.gui.sampling_method_var.get(),
                 # 不传 temperature_limit
-                p=self.gui.Planckian_Jitter_probability.get()
+                p=self.gui.Planckian_Jitter_probability.get(),
+                bboxes=bboxes,
+                labels=labels,
             )
 
         # 浮雕效果
         if getattr(self.gui, 'use_Emboss', None) and self.gui.use_Emboss.get():
-            aug_img = self.gui.apply_Emboss(
+            aug_img, bboxes = self.gui.apply_Emboss(
                 aug_img,
                 alpha=(self.gui.alpha_min.get(), self.gui.alpha_max.get()),
                 strength=(self.gui.strength_min.get(), self.gui.strength_max.get()),
-                p=self.gui.Emboss_probability.get()
+                p=self.gui.Emboss_probability.get(),
+                bboxes=bboxes,
+                labels=labels,
             )
 
         # 应用散粒噪声
         if getattr(self.gui, 'use_ShotNoise', None) and self.gui.use_ShotNoise.get():
-            aug_img = self.gui.apply_ShotNoise(
+            aug_img, bboxes = self.gui.apply_ShotNoise(
                 aug_img,
                 scale_range=(self.gui.scale_min.get(), self.gui.scale_max.get()),
-                p=self.gui.ShotNoise_probability.get()
+                p=self.gui.ShotNoise_probability.get(),
+                bboxes=bboxes,
+                labels=labels,
             )
 
         # 应用相机传感器噪声
         if getattr(self.gui, 'use_ISONoise', None) and self.gui.use_ISONoise.get():
-            aug_img = self.gui.apply_ISONoise(
+            aug_img, bboxes = self.gui.apply_ISONoise(
                 aug_img,
                 color_shift=(self.gui.acolor_shift_min.get(), self.gui.color_shift_max.get()),
                 intensity=(self.gui.intensity_min.get(), self.gui.intensity_max.get()),
-                p=self.gui.Emboss_probability.get()
+                p=self.gui.Emboss_probability.get(),
+                bboxes=bboxes,
+                labels=labels,
             )
 
         # 应用改变色调、饱和度和明度
         if getattr(self.gui, 'use_HueSaturationValue', None) and self.gui.use_HueSaturationValue.get():
-            aug_img = self.gui.apply_HueSaturationValue(
+            aug_img, bboxes = self.gui.apply_HueSaturationValue(
                 aug_img,
                 hue_shift_limit=(self.gui.hue_shift_limit_min.get(), self.gui.hue_shift_limit_max.get()),
                 sat_shift_limit=(self.gui.sat_shift_limit_min.get(), self.gui.sat_shift_limit_max.get()),
                 val_shift_limit=(self.gui.val_shift_limit_min.get(), self.gui.val_shift_limit_max.get()),
-                p=self.gui.HueSaturationValue_probability.get()
+                p=self.gui.HueSaturationValue_probability.get(),
+                bboxes=bboxes,
+                labels=labels,
             )
 
         # 应用光照效果
         if getattr(self.gui, 'use_Illumination', None) and self.gui.use_Illumination.get():
-            aug_img = self.gui.apply_Illumination(
+            aug_img, bboxes = self.gui.apply_Illumination(
                 aug_img,
                 Illumination_mode=self.gui.Illumination_mode_var.get(),
                 effect_type=self.gui.effect_type_var.get(),
@@ -239,36 +269,46 @@ class AugModeHelper:
                 angle_range=(self.gui.angle_range_min.get(), self.gui.angle_range_max.get()),
                 center_range=(self.gui.center_range_min.get(), self.gui.center_range_max.get()),
                 sigma_range=(self.gui.sigma_range_min.get(), self.gui.sigma_range_max.get()),
-                p=self.gui.Illumination_probability.get()
+                p=self.gui.Illumination_probability.get(),
+                bboxes=bboxes,
+                labels=labels,
             )
 
         # 应用失焦模糊
         if getattr(self.gui, 'use_Defocus', None) and self.gui.use_Defocus.get():
-            aug_img = self.gui.apply_Defocus(
+            aug_img, bboxes = self.gui.apply_Defocus(
                 aug_img,
                 radius=(self.gui.radius_min.get(), self.gui.radius_max.get()),
                 alias_blur=(self.gui.alias_blur_min.get(), self.gui.alias_blur_max.get()),
-                p=self.gui.Defocus_probability.get()
+                p=self.gui.Defocus_probability.get(),
+                bboxes=bboxes,
+                labels=labels,
             )
 
         # 应用缩放模糊
         if getattr(self.gui, 'use_ZoomBlur', None) and self.gui.use_ZoomBlur.get():
-            aug_img = self.gui.apply_ZoomBlur(
+            aug_img, bboxes = self.gui.apply_ZoomBlur(
                 aug_img,
                 max_factor=(self.gui.max_factor_min.get(), self.gui.max_factor_max.get()),
-                astep_factor=(self.gui.astep_factor_min.get(), self.gui.astep_factor_max.get()),
-                p=self.gui.ZoomBlur_probability.get()
+                step_factor=(self.gui.astep_factor_min.get(), self.gui.astep_factor_max.get()),
+                p=self.gui.ZoomBlur_probability.get(),
+                bboxes=bboxes,
+                labels=labels,
             )
 
         # 应用光学扭曲
         if getattr(self.gui, 'use_OpticalDistortion', None) and self.gui.use_OpticalDistortion.get():
-            aug_img = self.gui.apply_OpticalDistortion(
+            aug_img, bboxes = self.gui.apply_OpticalDistortion(
                 aug_img,
-                OpticalDistortion_mode=self.gui.OpticalDistortion_mode_var.get(),
-                effect_type=self.gui.effect_type_var.get(),
                 distort_limit=(self.gui.distort_limit_min.get(), self.gui.distort_limit_max.get()),
-                p=self.gui.OpticalDistortion_probability.get()
+                interpolation=cv2.INTER_LINEAR,
+                mode=self.gui.OpticalDistortion_mode_var.get(),
+                border_mode=cv2.BORDER_CONSTANT,
+                p=self.gui.OpticalDistortion_probability.get(),
+                bboxes=bboxes,
+                labels=labels,
             )
 
         self.gui.aug_img = aug_img
-        self.show_image(aug_img, self.gui.aug_canvas)
+        self.gui.bboxes = bboxes
+        self.show_image(aug_img, self.gui.aug_canvas, bboxes, labels)

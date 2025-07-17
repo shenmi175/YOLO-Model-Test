@@ -2,22 +2,29 @@
 import albumentations as A
 import cv2
 
-def apply_motion_blur(image, blur_limit=13, angle=0, direction=0, allow_shifted=True, p=0.5):
+def _apply(transform, image, bboxes=None, labels=None):
+    """Apply an albumentations transform with optional bbox support."""
+    if bboxes is not None:
+        compose = A.Compose([transform], bbox_params=A.BboxParams(format="pascal_voc", label_fields=["labels"]))
+        data = compose(image=image, bboxes=bboxes, labels=labels or [0] * len(bboxes))
+        return data["image"], data["bboxes"]
+    data = A.Compose([transform])(image=image)
+    return data["image"], bboxes
+
+def apply_motion_blur(image, blur_limit=13, angle=0, direction=0, allow_shifted=True, p=0.5, bboxes=None, labels=None):
     """
     应用运动模糊增强
     """
     transform = A.MotionBlur(
         blur_limit=blur_limit,
         allow_shifted=allow_shifted,
-        angle_range=[angle, angle],
-        direction_range=[direction, direction],
-        p=p # 一定概率应用
+        angle_range=(angle, angle),
+        direction_range=(direction, direction),
+        p=p
     )
-    # albumentations 需要图片是uint8格式
-    result = transform(image=image)
-    return result['image']
+    return _apply(transform, image, bboxes, labels)
 
-def apply_AdditiveNoise(image, noise_type="gaussian", spatial_mode="shared", mean_range=(0,0), std_range=(0.05,0.15), approximation=1, p=0.5):
+def apply_AdditiveNoise(image, noise_type="gaussian", spatial_mode="shared", mean_range=(0,0), std_range=(0.05,0.15), approximation=1, p=0.5, bboxes=None, labels=None):
     """
     应用添加噪声
     """
@@ -27,17 +34,16 @@ def apply_AdditiveNoise(image, noise_type="gaussian", spatial_mode="shared", mea
     }
 
     transform = A.AdditiveNoise(
-        noise_type = noise_type,
-        spatial_mode = spatial_mode,
+        noise_type=noise_type,
+        spatial_mode=spatial_mode,
         noise_params=noise_params,
         approximation=approximation,
         p=p,
 
     )
-    result = transform(image=image)
-    return result['image']
+    return _apply(transform, image, bboxes, labels)
 
-def apply_ShotNoise(image, scale_range = (0.05,0.2) ,p=0.5):
+def apply_ShotNoise(image, scale_range = (0.05,0.2) ,p=0.5, bboxes=None, labels=None):
     """
     应用散粒噪声
     """
@@ -45,10 +51,9 @@ def apply_ShotNoise(image, scale_range = (0.05,0.2) ,p=0.5):
         scale_range = scale_range,
         p=p,
     )
-    result = transform(image=image)
-    return result['image']
+    return _apply(transform, image, bboxes, labels)
 
-def apply_ToGray(image, method="weighted_average", p=0.5):
+def apply_ToGray(image, method="weighted_average", p=0.5, bboxes=None, labels=None):
     """
     应用灰度变换
     """
@@ -57,31 +62,28 @@ def apply_ToGray(image, method="weighted_average", p=0.5):
         p = p,
     )
 
-    result = transform(image=image)
-    return result['image']
+    return _apply(transform, image, bboxes, labels)
 
-def apply_PlanckianJitter(image, mode="blackbody", sampling_method="uniform", p=0.5):
+def apply_PlanckianJitter(image, mode="blackbody", sampling_method="uniform", p=0.5, bboxes=None, labels=None):
     transform = A.PlanckianJitter(
         mode=mode,
         sampling_method=sampling_method,
         p=p,
     )
-    result = transform(image=image)
-    return result['image']
+    return _apply(transform, image, bboxes, labels)
 
 
-def apply_Emboss(image, alpha=(0.2, 0.5), strength=(0.2, 0.7), p=0.5):
+def apply_Emboss(image, alpha=(0.2, 0.5), strength=(0.2, 0.7), p=0.5, bboxes=None, labels=None):
     "应用浮雕效果"
     transform = A.Emboss(
         alpha=alpha,
         strength=strength,
         p=p,
     )
-    result = transform(image=image)
-    return result['image']
+    return _apply(transform, image, bboxes, labels)
 
 
-def apply_ISONoise(image, color_shift=(0.01, 0.05), intensity=(0.1, 0.5), p=0.5):
+def apply_ISONoise(image, color_shift=(0.01, 0.05), intensity=(0.1, 0.5), p=0.5, bboxes=None, labels=None):
     "应用相机传感器噪声"
     """
     color_shift:
@@ -99,11 +101,11 @@ def apply_ISONoise(image, color_shift=(0.01, 0.05), intensity=(0.1, 0.5), p=0.5)
         intensity=intensity,
         p=p,
     )
-    result = transform(image=image)
-    return result['image']
+    return _apply(transform, image, bboxes, labels)
 
 
-def apply_HueSaturationValue(image, hue_shift_limit=(-20, 20), sat_shift_limit=(-30, 30), val_shift_limit=(-20, 20), p=0.5):
+def apply_HueSaturationValue(image, hue_shift_limit=(-20, 20), sat_shift_limit=(-30, 30), val_shift_limit=(-20, 20), p=0.5,
+                             bboxes=None, labels=None):
     "应用改变色调、饱和度和明度"
     """
     改变色调的范围。
@@ -124,11 +126,10 @@ def apply_HueSaturationValue(image, hue_shift_limit=(-20, 20), sat_shift_limit=(
         val_shift_limit=val_shift_limit,
         p=p,
     )
-    result = transform(image=image)
-    return result['image']
+    return _apply(transform, image, bboxes, labels)
 
 def apply_Illumination(image, Illumination_mode="linear",intensity_range=(0.01, 0.2),effect_type="both",
-                       angle_range=(0, 360), center_range=(0.1, 0.9), sigma_range=(0.2, 1), p=0.5):
+                       angle_range=(0, 360), center_range=(0.1, 0.9), sigma_range=(0.2, 1), p=0.5, bboxes=None, labels=None):
     "应用光照效果"
     """
     照明模式类型：
@@ -179,7 +180,7 @@ def apply_Illumination(image, Illumination_mode="linear",intensity_range=(0.01, 
     仅用于 'gaussian' 模式。
     默认: (0.2, 1.0)
     """
-    transform = A.Emboss(
+    transform = A.Illumination(
         mode=Illumination_mode,
         intensity_range=intensity_range,
         effect_type=effect_type,
@@ -188,10 +189,9 @@ def apply_Illumination(image, Illumination_mode="linear",intensity_range=(0.01, 
         sigma_range=sigma_range,
         p=p,
     )
-    result = transform(image=image)
-    return result['image']
+    return _apply(transform, image, bboxes, labels)
 
-def apply_Defocus(image, radius=(3, 10), alias_blur=(0.1, 0.5), p=0.5):
+def apply_Defocus(image, radius=(3, 10), alias_blur=(0.1, 0.5), p=0.5, bboxes=None, labels=None):
     "应用失焦模糊"
     """
     模糊半径的范围。
@@ -210,10 +210,9 @@ def apply_Defocus(image, radius=(3, 10), alias_blur=(0.1, 0.5), p=0.5):
         alias_blur=alias_blur,
         p=p,
     )
-    result = transform(image=image)
-    return result['image']
+    return _apply(transform, image, bboxes, labels)
 
-def apply_ZoomBlur(image, max_factor=(1, 1.31), astep_factor=(0.01, 0.03), p=0.5):
+def apply_ZoomBlur(image, max_factor=(1, 1.31), step_factor=(0.01, 0.03), p=0.5, bboxes=None, labels=None):
     "应用缩放模糊"
     """
     模糊最大因子的范围。
@@ -224,18 +223,17 @@ def apply_ZoomBlur(image, max_factor=(1, 1.31), astep_factor=(0.01, 0.03), p=0.5
     如果使用浮点数元组作为步长参数，其范围将在 `[step_factor[0], step_factor[1})`。默认值：(0.01, 0.03)。
     所有 step_factor 值应为正数。
     """
-    transform = A.Defocus(
+    transform = A.ZoomBlur(
         max_factor=max_factor,
-        astep_factor=astep_factor,
+        step_factor=step_factor,
         p=p,
     )
-    result = transform(image=image)
-    return result['image']
+    return _apply(transform, image, bboxes, labels)
 
 def apply_OpticalDistortion(image, distort_limit=(0.5, 0.5), interpolation=cv2.INTER_LINEAR,
                             mode="camera",
                             border_mode=cv2.BORDER_CONSTANT,
-                            p=0.5):
+                            p=0.5, bboxes=None, labels=None):
     "应用光学扭曲"
     """
     扭曲系数的范围。
@@ -260,5 +258,4 @@ def apply_OpticalDistortion(image, distort_limit=(0.5, 0.5), interpolation=cv2.I
         border_mode=border_mode,
         p=p,
     )
-    result = transform(image=image)
-    return result['image']
+    return _apply(transform, image, bboxes, labels)

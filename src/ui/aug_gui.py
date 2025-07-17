@@ -51,6 +51,29 @@ class AugmentationGUI:
         self.select_btn = tk.Button(master, text="选择图片", command=self.helper.load_image)
         self.select_btn.grid(row=1, column=0, padx=10, pady=2, sticky='w')
 
+        # ==== 可滚动参数区域 ====
+        scroll_container = tk.Frame(master)
+        scroll_container.grid(row=2, column=0, columnspan=4, sticky='nsew')
+        master.grid_rowconfigure(2, weight=1)
+        master.grid_columnconfigure(0, weight=1)
+
+        self.canvas = tk.Canvas(scroll_container, highlightthickness=0)
+        self.v_scroll = tk.Scrollbar(scroll_container, orient='vertical', command=self.canvas.yview)
+        self.canvas.configure(yscrollcommand=self.v_scroll.set)
+        self.canvas.pack(side='left', fill='both', expand=True)
+        self.v_scroll.pack(side='right', fill='y')
+
+        self.scroll_frame = tk.Frame(self.canvas)
+        self.canvas.create_window((0, 0), window=self.scroll_frame, anchor='nw')
+        self.scroll_frame.bind(
+            '<Configure>',
+            lambda e: self.canvas.configure(scrollregion=self.canvas.bbox('all'))
+        )
+        self.canvas.bind_all(
+            '<MouseWheel>',
+            lambda e: self.canvas.yview_scroll(int(-1 * (e.delta / 120)), 'units')
+        )
+
         # ==== 各分组网格参数 ====
         max_cols = 3   # 一行显示几列分组，可调整
         group_frames = []  # 保存各分组frame（用于批量布局）
@@ -108,10 +131,10 @@ class AugmentationGUI:
             },
         ]
 
-        group_row = 3
+        group_row = 0
         group_col = 0
         for group in groups:
-            frame = tk.LabelFrame(master, text=group['title'], padx=10, pady=5)
+            frame = tk.LabelFrame(self.scroll_frame, text=group['title'], padx=10, pady=5)
             frame.grid(row=group_row, column=group_col, padx=10, pady=6, sticky='nw')
             group['build_func'](frame)
             group_frames.append(frame)
@@ -121,7 +144,7 @@ class AugmentationGUI:
                 group_row += 1
 
         # 保存按钮
-        self.save_btn = tk.Button(master, text="保存增强后图片", command=self.helper.save_aug_image)
+        self.save_btn = tk.Button(self.scroll_frame, text="保存增强后图片", command=self.helper.save_aug_image)
         self.save_btn.grid(row=group_row+1, column=0, padx=10, pady=10, sticky='w')
 
         # 默认加载图片
@@ -662,16 +685,70 @@ class AugmentationGUI:
             frame, row=2, col_label=2, col_scale=3, command=lambda v: self.helper.update_preview())
 
     def build_Defocus_group(self, frame):
+        self.use_Defocus = tk.BooleanVar(value=False)
+        tk.Checkbutton(frame, text="启用", variable=self.use_Defocus, command=self.helper.update_preview).grid(row=0, column=0, sticky='w')
+        tk.Label(frame, text="radius:").grid(row=1, column=0, sticky='e')
+        self.radius_min = tk.Scale(frame, from_=1, to=15, orient=tk.HORIZONTAL, length=100,
+                                   command=lambda v: self.helper.slider_pair_link(self.radius_min, self.radius_max))
+        self.radius_min.set(3)
+        self.radius_min.grid(row=1, column=1, sticky='w')
+        self.radius_max = tk.Scale(frame, from_=1, to=15, orient=tk.HORIZONTAL, length=100,
+                                   command=lambda v: self.helper.slider_pair_link(self.radius_min, self.radius_max))
+        self.radius_max.set(10)
+        self.radius_max.grid(row=1, column=2, sticky='w')
+        tk.Label(frame, text="alias_blur:").grid(row=2, column=0, sticky='e')
+        self.alias_blur_min = tk.Scale(frame, from_=0.0, to=1.0, resolution=0.05, orient=tk.HORIZONTAL, length=100,
+                                       command=lambda v: self.helper.slider_pair_link(self.alias_blur_min, self.alias_blur_max))
+        self.alias_blur_min.set(0.1)
+        self.alias_blur_min.grid(row=2, column=1, sticky='w')
+        self.alias_blur_max = tk.Scale(frame, from_=0.0, to=1.0, resolution=0.05, orient=tk.HORIZONTAL, length=100,
+                                       command=lambda v: self.helper.slider_pair_link(self.alias_blur_min, self.alias_blur_max))
+        self.alias_blur_max.set(0.5)
+        self.alias_blur_max.grid(row=2, column=2, sticky='w')
         self.Defocus_probability_label, self.Defocus_probability = self.create_probability_control(
-            frame, row=2, col_label=2, col_scale=3, command=lambda v: self.helper.update_preview())
+            frame, row=3, col_label=2, col_scale=3, command=lambda v: self.helper.update_preview())
 
     def build_ZoomBlur_group(self, frame):
+        self.use_ZoomBlur = tk.BooleanVar(value=False)
+        tk.Checkbutton(frame, text="启用", variable=self.use_ZoomBlur, command=self.helper.update_preview).grid(row=0, column=0, sticky='w')
+        tk.Label(frame, text="max_factor:").grid(row=1, column=0, sticky='e')
+        self.max_factor_min = tk.Scale(frame, from_=1.0, to=2.0, resolution=0.01, orient=tk.HORIZONTAL, length=100,
+                                       command=lambda v: self.helper.slider_pair_link(self.max_factor_min, self.max_factor_max))
+        self.max_factor_min.set(1.0)
+        self.max_factor_min.grid(row=1, column=1, sticky='w')
+        self.max_factor_max = tk.Scale(frame, from_=1.0, to=2.0, resolution=0.01, orient=tk.HORIZONTAL, length=100,
+                                       command=lambda v: self.helper.slider_pair_link(self.max_factor_min, self.max_factor_max))
+        self.max_factor_max.set(1.31)
+        self.max_factor_max.grid(row=1, column=2, sticky='w')
+        tk.Label(frame, text="step_factor:").grid(row=2, column=0, sticky='e')
+        self.astep_factor_min = tk.Scale(frame, from_=0.01, to=0.1, resolution=0.01, orient=tk.HORIZONTAL, length=100,
+                                         command=lambda v: self.helper.slider_pair_link(self.astep_factor_min, self.astep_factor_max))
+        self.astep_factor_min.set(0.01)
+        self.astep_factor_min.grid(row=2, column=1, sticky='w')
+        self.astep_factor_max = tk.Scale(frame, from_=0.01, to=0.1, resolution=0.01, orient=tk.HORIZONTAL, length=100,
+                                         command=lambda v: self.helper.slider_pair_link(self.astep_factor_min, self.astep_factor_max))
+        self.astep_factor_max.set(0.03)
+        self.astep_factor_max.grid(row=2, column=2, sticky='w')
         self.ZoomBlur_probability_label, self.ZoomBlur_probability = self.create_probability_control(
-            frame, row=2, col_label=2, col_scale=3, command=lambda v: self.helper.update_preview())
+            frame, row=3, col_label=2, col_scale=3, command=lambda v: self.helper.update_preview())
 
     def build_OpticalDistortion_group(self, frame):
+        self.use_OpticalDistortion = tk.BooleanVar(value=False)
+        tk.Checkbutton(frame, text="启用", variable=self.use_OpticalDistortion, command=self.helper.update_preview).grid(row=0, column=0, sticky='w')
+        tk.Label(frame, text="mode:").grid(row=1, column=0, sticky='e')
+        self.OpticalDistortion_mode_var = tk.StringVar(value="camera")
+        tk.OptionMenu(frame, self.OpticalDistortion_mode_var, "camera", "fisheye", command=lambda _: self.helper.update_preview()).grid(row=1, column=1, sticky='w')
+        tk.Label(frame, text="distort_limit:").grid(row=2, column=0, sticky='e')
+        self.distort_limit_min = tk.Scale(frame, from_=-0.3, to=0.3, resolution=0.01, orient=tk.HORIZONTAL, length=100,
+                                          command=lambda v: self.helper.slider_pair_link(self.distort_limit_min, self.distort_limit_max))
+        self.distort_limit_min.set(-0.05)
+        self.distort_limit_min.grid(row=2, column=1, sticky='w')
+        self.distort_limit_max = tk.Scale(frame, from_=-0.3, to=0.3, resolution=0.01, orient=tk.HORIZONTAL, length=100,
+                                          command=lambda v: self.helper.slider_pair_link(self.distort_limit_min, self.distort_limit_max))
+        self.distort_limit_max.set(0.05)
+        self.distort_limit_max.grid(row=2, column=2, sticky='w')
         self.Emboss_OpticalDistortion_label, self.OpticalDistortion_probability = self.create_probability_control(
-            frame, row=2, col_label=2, col_scale=3, command=lambda v: self.helper.update_preview())
+            frame, row=3, col_label=2, col_scale=3, command=lambda v: self.helper.update_preview())
 
 
 def run_gui():

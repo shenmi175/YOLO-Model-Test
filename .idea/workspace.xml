@@ -5,16 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="757978fc-c7d2-4851-a074-3aa64ec6cd9e" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/aug_main.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/augment/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/augment/aug.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/ui/aug_gui.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/utils/aug_mode.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test_aug.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test_data/20221126152950_002730.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test_data/20221126152950_002730.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test_data/augmentation_param_log.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/augment/aug.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/augment/aug.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/aug_gui.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/aug_gui.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/aug_mode.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/aug_mode.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -352,7 +346,7 @@
       <workItem from="1751605793036" duration="1729000" />
       <workItem from="1751853208660" duration="20411000" />
       <workItem from="1752221731399" duration="613000" />
-      <workItem from="1752459175168" duration="67907000" />
+      <workItem from="1752459175168" duration="70559000" />
     </task>
     <servers />
   </component>
@@ -367,7 +361,7 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/YOLO_Model_Test$demo.coverage" NAME="demo Coverage Results" MODIFIED="1751427798385" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/YOLO_Model_Test$aug_main.coverage" NAME="aug_main Coverage Results" MODIFIED="1752734215896" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/YOLO_Model_Test$aug_main.coverage" NAME="aug_main Coverage Results" MODIFIED="1752739158067" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/YOLO_Model_Test$tools.coverage" NAME="tools Coverage Results" MODIFIED="1751856396784" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/YOLO_Model_Test$confusion_cli.coverage" NAME="confusion_cli Coverage Results" MODIFIED="1751357053798" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
     <SUITE FILE_PATH="coverage/YOLO_Model_Test$test_aug.coverage" NAME="test_aug Coverage Results" MODIFIED="1752482147078" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
