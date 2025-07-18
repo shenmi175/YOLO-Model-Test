@@ -5,18 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="757978fc-c7d2-4851-a074-3aa64ec6cd9e" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/test_data/out/20221126152950_002730_aug.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test_data/out/20221126152950_002730_aug.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test_data/out/test1/20221126152950_002730_aug.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test_data/out/test1/20221126152950_002730_aug.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test_data/out/test1/test2/22112604_002940_aug.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test_data/out/test1/test2/22112604_002940_aug.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test_data/out/test2/22112604_002940_aug.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test_data/out/test2/22112604_002940_aug.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test_data/out/test2/test2/22112604_002940_aug.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test_data/out/test2/test2/22112604_002940_aug.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/aug_mode.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/aug_mode.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -56,36 +45,36 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_ADD_EXTERNAL_FILES": "true",
-    "Python tests.Python tests for test_confusion_cli.test_confusion_cli.executor": "Run",
-    "Python tests.Python tests for test_end_to_end.test_cli_end_to_end.executor": "Run",
-    "Python tests.Python tests for test_full_pipeline.test_cli_end_to_end.executor": "Run",
-    "Python tests.Python tests for test_gui.test_gui_import.executor": "Run",
-    "Python tests.Python tests for test_gui_run.test_run_evaluation.executor": "Run",
-    "Python tests.Python tests in test_aug.py.executor": "Run",
-    "Python tests.Python tests in test_full_pipeline.py.executor": "Run",
-    "Python tests.Python tests in test_gui_run.py.executor": "Run",
-    "Python.aug_main.executor": "Run",
-    "Python.confusion_cli.executor": "Run",
-    "Python.demo.executor": "Run",
-    "Python.main.executor": "Run",
-    "Python.replace_code.executor": "Run",
-    "Python.test_aug.executor": "Run",
-    "Python.tools.executor": "Run",
-    "Python.visualization.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "G:/A_Share/YOLO-Model-Test/test_data",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;Python tests.Python tests for test_confusion_cli.test_confusion_cli.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_end_to_end.test_cli_end_to_end.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_full_pipeline.test_cli_end_to_end.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_gui.test_gui_import.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_gui_run.test_run_evaluation.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests in test_aug.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests in test_full_pipeline.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests in test_gui_run.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python.aug_main.executor&quot;: &quot;Run&quot;,
+    &quot;Python.confusion_cli.executor&quot;: &quot;Run&quot;,
+    &quot;Python.demo.executor&quot;: &quot;Run&quot;,
+    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+    &quot;Python.replace_code.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test_aug.executor&quot;: &quot;Run&quot;,
+    &quot;Python.tools.executor&quot;: &quot;Run&quot;,
+    &quot;Python.visualization.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;G:/A_Share/YOLO-Model-Test/test_data&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="G:\A_Share\YOLO-Model-Test\test_data" />
@@ -314,6 +303,7 @@
       <method v="2" />
     </configuration>
     <list>
+      <item itemvalue="Python.demo" />
       <item itemvalue="Python.aug_main" />
       <item itemvalue="Python.test_aug" />
       <item itemvalue="Python.xml2txt" />
@@ -355,6 +345,7 @@
       <workItem from="1751853208660" duration="20411000" />
       <workItem from="1752221731399" duration="613000" />
       <workItem from="1752459175168" duration="75734000" />
+      <workItem from="1752803339801" duration="1717000" />
     </task>
     <servers />
   </component>
@@ -369,7 +360,7 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/YOLO_Model_Test$demo.coverage" NAME="demo Coverage Results" MODIFIED="1751427798385" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/YOLO_Model_Test$aug_main.coverage" NAME="aug_main Coverage Results" MODIFIED="1752742425463" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/YOLO_Model_Test$aug_main.coverage" NAME="aug_main Coverage Results" MODIFIED="1752803535522" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/YOLO_Model_Test$tools.coverage" NAME="tools Coverage Results" MODIFIED="1751856396784" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/YOLO_Model_Test$confusion_cli.coverage" NAME="confusion_cli Coverage Results" MODIFIED="1751357053798" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
     <SUITE FILE_PATH="coverage/YOLO_Model_Test$test_aug.coverage" NAME="test_aug Coverage Results" MODIFIED="1752482147078" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
