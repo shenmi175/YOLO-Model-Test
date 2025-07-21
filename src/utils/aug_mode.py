@@ -194,14 +194,7 @@ class AugModeHelper:
 
         # 运动模糊
         if getattr(self.gui, 'use_motion_blur', None) and self.gui.use_motion_blur.get():
-            ops.append(
-                "MotionBlur "
-                f"blur_limit={self.gui.blur_limit.get()} "
-                f"angle_range=({self.gui.angle.get()}, {self.gui.angle.get()}) "
-                f"direction_range=({self.gui.direction.get()}, {self.gui.direction.get()}) "
-                f"allow_shifted=True"
-            )
-            aug_img, bboxes = self.gui.apply_motion_blur(
+            aug_img, bboxes, applied = self.gui.apply_motion_blur(
                 aug_img,
                 blur_limit=self.gui.blur_limit.get(),
                 angle=self.gui.angle.get(),
@@ -210,18 +203,18 @@ class AugModeHelper:
                 bboxes=bboxes,
                 labels=labels,
             )
+            if applied:
+                ops.append(
+                    "MotionBlur "
+                    f"blur_limit={self.gui.blur_limit.get()} "
+                    f"angle_range=({self.gui.angle.get()}, {self.gui.angle.get()}) "
+                    f"direction_range=({self.gui.direction.get()}, {self.gui.direction.get()}) "
+                    f"allow_shifted=True"
+                )
 
         # 加性噪声
         if getattr(self.gui, 'use_add_noise', None) and self.gui.use_add_noise.get():
-            ops.append(
-                "AdditiveNoise "
-                f"type={self.gui.noise_type_var.get()} "
-                f"mode={self.gui.spatial_mode_var.get()} "
-                f"mean_range=({self.gui.mean_min.get()}, {self.gui.mean_max.get()}) "
-                f"std_range=({self.gui.std_min.get()}, {self.gui.std_max.get()}) "
-                f"approximation={self.gui.approximation.get()}"
-            )
-            aug_img, bboxes = self.gui.apply_AdditiveNoise(
+            aug_img, bboxes, applied = self.gui.apply_AdditiveNoise(
                 aug_img,
                 noise_type=self.gui.noise_type_var.get(),
                 spatial_mode=self.gui.spatial_mode_var.get(),
@@ -232,19 +225,29 @@ class AugModeHelper:
                 bboxes=bboxes,
                 labels=labels,
             )
+            if applied:
+                ops.append(
+                    "AdditiveNoise "
+                    f"type={self.gui.noise_type_var.get()} "
+                    f"mode={self.gui.spatial_mode_var.get()} "
+                    f"mean_range=({self.gui.mean_min.get()}, {self.gui.mean_max.get()}) "
+                    f"std_range=({self.gui.std_min.get()}, {self.gui.std_max.get()}) "
+                    f"approximation={self.gui.approximation.get()}"
+                )
 
         # 灰度变换
         if getattr(self.gui, 'use_To_Gray', None) and self.gui.use_To_Gray.get():
-            ops.append(
-                f"ToGray method={self.gui.To_Gray_var.get()} p={self.gui.To_Gray_probability.get()}"
-            )
-            aug_img, bboxes = self.gui.apply_ToGray(
+            aug_img, bboxes, applied = self.gui.apply_ToGray(
                 aug_img,
                 method=self.gui.To_Gray_var.get(),
                 p=self.gui.To_Gray_probability.get(),
                 bboxes=bboxes,
                 labels=labels,
             )
+            if applied:
+                ops.append(
+                    f"ToGray method={self.gui.To_Gray_var.get()} p={self.gui.To_Gray_probability.get()}"
+                )
 
         # 普朗克抖动
         if getattr(self.gui, 'use_Planckian_Jitter', None) and self.gui.use_Planckian_Jitter.get():
@@ -266,13 +269,7 @@ class AugModeHelper:
 
         # 浮雕效果
         if getattr(self.gui, 'use_Emboss', None) and self.gui.use_Emboss.get():
-            ops.append(
-                "Emboss "
-                f"alpha=({self.gui.alpha_min.get()}, {self.gui.alpha_max.get()}) "
-                f"strength=({self.gui.strength_min.get()}, {self.gui.strength_max.get()}) "
-                f"p={self.gui.Emboss_probability.get()}"
-            )
-            aug_img, bboxes = self.gui.apply_Emboss(
+            aug_img, bboxes, applied = self.gui.apply_Emboss(
                 aug_img,
                 alpha=(self.gui.alpha_min.get(), self.gui.alpha_max.get()),
                 strength=(self.gui.strength_min.get(), self.gui.strength_max.get()),
@@ -280,30 +277,30 @@ class AugModeHelper:
                 bboxes=bboxes,
                 labels=labels,
             )
+            if applied:
+                ops.append(
+                    "Emboss "
+                    f"alpha=({self.gui.alpha_min.get()}, {self.gui.alpha_max.get()}) "
+                    f"strength=({self.gui.strength_min.get()}, {self.gui.strength_max.get()}) "
+                )
 
         # 应用散粒噪声
         if getattr(self.gui, 'use_ShotNoise', None) and self.gui.use_ShotNoise.get():
-            ops.append(
-                f"ShotNoise scale_range=({self.gui.scale_min.get()}, {self.gui.scale_max.get()}) "
-                f"p={self.gui.ShotNoise_probability.get()}"
-            )
-            aug_img, bboxes = self.gui.apply_ShotNoise(
+            aug_img, bboxes, applied = self.gui.apply_ShotNoise(
                 aug_img,
                 scale_range=(self.gui.scale_min.get(), self.gui.scale_max.get()),
                 p=self.gui.ShotNoise_probability.get(),
                 bboxes=bboxes,
                 labels=labels,
             )
+            if applied:
+                ops.append(
+                    f"ShotNoise scale_range=({self.gui.scale_min.get()}, {self.gui.scale_max.get()}) "
+                )
 
         # 应用相机传感器噪声
         if getattr(self.gui, 'use_ISONoise', None) and self.gui.use_ISONoise.get():
-            ops.append(
-                "ISONoise "
-                f"color_shift=({self.gui.acolor_shift_min.get()}, {self.gui.color_shift_max.get()}) "
-                f"intensity=({self.gui.intensity_min.get()}, {self.gui.intensity_max.get()}) "
-                f"p={self.gui.ISONoise_probability.get()}"
-            )
-            aug_img, bboxes = self.gui.apply_ISONoise(
+            aug_img, bboxes, applied = self.gui.apply_ISONoise(
                 aug_img,
                 color_shift=(self.gui.acolor_shift_min.get(), self.gui.color_shift_max.get()),
                 intensity=(self.gui.intensity_min.get(), self.gui.intensity_max.get()),
@@ -311,17 +308,16 @@ class AugModeHelper:
                 bboxes=bboxes,
                 labels=labels,
             )
+            if applied:
+                ops.append(
+                    "ISONoise "
+                    f"color_shift=({self.gui.acolor_shift_min.get()}, {self.gui.color_shift_max.get()}) "
+                    f"intensity=({self.gui.intensity_min.get()}, {self.gui.intensity_max.get()}) "
+                )
 
         # 应用改变色调、饱和度和明度
         if getattr(self.gui, 'use_HueSaturationValue', None) and self.gui.use_HueSaturationValue.get():
-            ops.append(
-                "HueSaturationValue "
-                f"hue_shift_limit=({self.gui.hue_shift_limit_min.get()}, {self.gui.hue_shift_limit_max.get()}) "
-                f"sat_shift_limit=({self.gui.sat_shift_limit_min.get()}, {self.gui.sat_shift_limit_max.get()}) "
-                f"val_shift_limit=({self.gui.val_shift_limit_min.get()}, {self.gui.val_shift_limit_max.get()}) "
-                f"p={self.gui.HueSaturationValue_probability.get()}"
-            )
-            aug_img, bboxes = self.gui.apply_HueSaturationValue(
+            aug_img, bboxes, applied = self.gui.apply_HueSaturationValue(
                 aug_img,
                 hue_shift_limit=(self.gui.hue_shift_limit_min.get(), self.gui.hue_shift_limit_max.get()),
                 sat_shift_limit=(self.gui.sat_shift_limit_min.get(), self.gui.sat_shift_limit_max.get()),
@@ -330,20 +326,17 @@ class AugModeHelper:
                 bboxes=bboxes,
                 labels=labels,
             )
+            if applied:
+                ops.append(
+                    "HueSaturationValue "
+                    f"hue_shift_limit=({self.gui.hue_shift_limit_min.get()}, {self.gui.hue_shift_limit_max.get()}) "
+                    f"sat_shift_limit=({self.gui.sat_shift_limit_min.get()}, {self.gui.sat_shift_limit_max.get()}) "
+                    f"val_shift_limit=({self.gui.val_shift_limit_min.get()}, {self.gui.val_shift_limit_max.get()}) "
+                )
 
         # 应用光照效果
         if getattr(self.gui, 'use_Illumination', None) and self.gui.use_Illumination.get():
-            ops.append(
-                "Illumination "
-                f"mode={self.gui.Illumination_mode_var.get()} "
-                f"effect_type={self.gui.effect_type_var.get()} "
-                f"intensity_range=({self.gui.intensity_range_min.get()}, {self.gui.intensity_range_max.get()}) "
-                f"angle_range=({self.gui.angle_range_min.get()}, {self.gui.angle_range_max.get()}) "
-                f"center_range=({self.gui.center_range_min.get()}, {self.gui.center_range_max.get()}) "
-                f"sigma_range=({self.gui.sigma_range_min.get()}, {self.gui.sigma_range_max.get()}) "
-                f"p={self.gui.Illumination_probability.get()}"
-            )
-            aug_img, bboxes = self.gui.apply_Illumination(
+            aug_img, bboxes, applied = self.gui.apply_Illumination(
                 aug_img,
                 Illumination_mode=self.gui.Illumination_mode_var.get(),
                 effect_type=self.gui.effect_type_var.get(),
@@ -355,16 +348,20 @@ class AugModeHelper:
                 bboxes=bboxes,
                 labels=labels,
             )
+            if applied:
+                ops.append(
+                    "Illumination "
+                    f"mode={self.gui.Illumination_mode_var.get()} "
+                    f"effect_type={self.gui.effect_type_var.get()} "
+                    f"intensity_range=({self.gui.intensity_range_min.get()}, {self.gui.intensity_range_max.get()}) "
+                    f"angle_range=({self.gui.angle_range_min.get()}, {self.gui.angle_range_max.get()}) "
+                    f"center_range=({self.gui.center_range_min.get()}, {self.gui.center_range_max.get()}) "
+                    f"sigma_range=({self.gui.sigma_range_min.get()}, {self.gui.sigma_range_max.get()}) "
+                )
 
         # 应用失焦模糊
         if getattr(self.gui, 'use_Defocus', None) and self.gui.use_Defocus.get():
-            ops.append(
-                "Defocus "
-                f"radius=({self.gui.radius_min.get()}, {self.gui.radius_max.get()}) "
-                f"alias_blur=({self.gui.alias_blur_min.get()}, {self.gui.alias_blur_max.get()}) "
-                f"p={self.gui.Defocus_probability.get()}"
-            )
-            aug_img, bboxes = self.gui.apply_Defocus(
+            aug_img, bboxes, applied = self.gui.apply_Defocus(
                 aug_img,
                 radius=(self.gui.radius_min.get(), self.gui.radius_max.get()),
                 alias_blur=(self.gui.alias_blur_min.get(), self.gui.alias_blur_max.get()),
@@ -372,16 +369,16 @@ class AugModeHelper:
                 bboxes=bboxes,
                 labels=labels,
             )
+            if applied:
+                ops.append(
+                    "Defocus "
+                    f"radius=({self.gui.radius_min.get()}, {self.gui.radius_max.get()}) "
+                    f"alias_blur=({self.gui.alias_blur_min.get()}, {self.gui.alias_blur_max.get()}) "
+                )
 
         # 应用缩放模糊
         if getattr(self.gui, 'use_ZoomBlur', None) and self.gui.use_ZoomBlur.get():
-            ops.append(
-                "ZoomBlur "
-                f"max_factor=({self.gui.max_factor_min.get()}, {self.gui.max_factor_max.get()}) "
-                f"step_factor=({self.gui.astep_factor_min.get()}, {self.gui.astep_factor_max.get()}) "
-                f"p={self.gui.ZoomBlur_probability.get()}"
-            )
-            aug_img, bboxes = self.gui.apply_ZoomBlur(
+            aug_img, bboxes, applied = self.gui.apply_ZoomBlur(
                 aug_img,
                 max_factor=(self.gui.max_factor_min.get(), self.gui.max_factor_max.get()),
                 step_factor=(self.gui.astep_factor_min.get(), self.gui.astep_factor_max.get()),
@@ -389,17 +386,16 @@ class AugModeHelper:
                 bboxes=bboxes,
                 labels=labels,
             )
+            if applied:
+                ops.append(
+                    "ZoomBlur "
+                    f"max_factor=({self.gui.max_factor_min.get()}, {self.gui.max_factor_max.get()}) "
+                    f"step_factor=({self.gui.astep_factor_min.get()}, {self.gui.astep_factor_max.get()}) "
+                )
 
         # 应用光学扭曲
         if getattr(self.gui, 'use_OpticalDistortion', None) and self.gui.use_OpticalDistortion.get():
-            ops.append(
-                "OpticalDistortion "
-                f"distort_limit=({self.gui.distort_limit_min.get()}, {self.gui.distort_limit_max.get()}) "
-                f"mode={self.gui.OpticalDistortion_mode_var.get()} "
-                f"border_mode={cv2.BORDER_CONSTANT} "
-                f"p={self.gui.OpticalDistortion_probability.get()}"
-            )
-            aug_img, bboxes = self.gui.apply_OpticalDistortion(
+            aug_img, bboxes, applied = self.gui.apply_OpticalDistortion(
                 aug_img,
                 distort_limit=(self.gui.distort_limit_min.get(), self.gui.distort_limit_max.get()),
                 interpolation=cv2.INTER_LINEAR,
@@ -409,6 +405,13 @@ class AugModeHelper:
                 bboxes=bboxes,
                 labels=labels,
             )
+            if applied:
+                ops.append(
+                    "OpticalDistortion "
+                    f"distort_limit=({self.gui.distort_limit_min.get()}, {self.gui.distort_limit_max.get()}) "
+                    f"mode={self.gui.OpticalDistortion_mode_var.get()} "
+                    f"border_mode={cv2.BORDER_CONSTANT} "
+                )
 
         return aug_img, bboxes, ops
 
