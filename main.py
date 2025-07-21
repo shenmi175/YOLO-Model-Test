@@ -3,6 +3,9 @@ import argparse
 from src.config import Config
 from src.ui import gui
 
+# 使用方式
+#  python .\main.py --gui
+
 
 def parse_args() -> argparse.Namespace:
     """

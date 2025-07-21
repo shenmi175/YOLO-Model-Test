@@ -1,9 +1,9 @@
-model_path: models/yolov8n_FastNet_250628.pt
+model_path: models/yolov8s_bgr_250711.pt
 confidence_threshold: 0.50
-iou_threshold: 0.45
+iou_threshold: 0.5
 data_dir: test_data
 save_predictions: true
 output_dir: output
 save_images: false
-img_size: [192, 320]
+img_size: [288, 480]
 batch_size: 1

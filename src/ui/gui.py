@@ -120,9 +120,18 @@ def run_evaluation(
         class_names = None
     evaluator = Evaluator(cfg.iou_threshold, class_names)
 
-    def save_result(name: str, anns: list[Annotation]) -> None:
-        preds = {a.image_path: predictions[a.image_path] for a in anns}
-        res = evaluator.evaluate(anns, preds)
+    groups: dict[str, list[Annotation]] = {}
+    root_dir = Path(cfg.data_dir)
+    for ann in annotations:
+        rel = Path(ann.image_path).relative_to(root_dir)
+        parts = rel.parts
+        for i in range(1, len(parts)):
+            key = Path(*parts[:i]).as_posix()
+            groups.setdefault(key, []).append(ann)
+
+    results = evaluator.evaluate_groups(annotations, predictions, groups)
+
+    for name, res in results.items():
         logging.info(
             "%s - Precision: %.3f Recall: %.3f F1: %.3f mAP50: %.3f",
             name,
@@ -141,20 +150,6 @@ def run_evaluation(
             plot_confusion_matrix(res.confusion_prob, labels, True, str(cmp_path))
         except Exception as exc:  # pragma: no cover - matplotlib optional
             logging.error("Failed to plot confusion matrix: %s", exc)
-
-    save_result("overall", annotations)
-
-    groups: dict[str, list[Annotation]] = {}
-    root_dir = Path(cfg.data_dir)
-    for ann in annotations:
-        rel = Path(ann.image_path).relative_to(root_dir)
-        parts = rel.parts
-        for i in range(1, len(parts)):
-            key = Path(*parts[:i]).as_posix()
-            groups.setdefault(key, []).append(ann)
-
-    for name, anns in groups.items():
-        save_result(name, anns)
 
     if cfg.save_predictions:
         pred_file = run_dir / "predictions.txt"
