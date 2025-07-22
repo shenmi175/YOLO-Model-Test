@@ -413,6 +413,24 @@ class AugModeHelper:
                     f"border_mode={cv2.BORDER_CONSTANT} "
                 )
 
+        # 条状遮挡
+        if getattr(self.gui, 'use_bar_occlusion', None) and self.gui.use_bar_occlusion.get():
+            aug_img, bboxes, applied = self.gui.apply_bar_occlusion(
+                aug_img,
+                orientation=self.gui.bar_orientation_var.get(),
+                stripe_width=self.gui.bar_width.get(),
+                gap=self.gui.bar_gap.get(),
+                p=self.gui.bar_probability.get(),
+                bboxes=bboxes,
+                labels=labels,
+            )
+            if applied:
+                ops.append(
+                    "BarOcclusion "
+                    f"orientation={self.gui.bar_orientation_var.get()} "
+                    f"width={self.gui.bar_width.get()} gap={self.gui.bar_gap.get()}"
+                )
+
         return aug_img, bboxes, ops
 
     def update_preview(self):
@@ -481,3 +499,5 @@ class AugModeHelper:
                 out_xml = out_img.with_suffix('.xml')
                 self.update_annotation(xml_path, str(out_xml), aug_boxes, labels)
             logging.info("Ops: %s", "; ".join(ops))
+
+

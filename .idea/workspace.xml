@@ -5,15 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="757978fc-c7d2-4851-a074-3aa64ec6cd9e" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/demo2.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/models/yolov8s_bgr_250711.pt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/configs/default.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/configs/default.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo.py" beforeDir="false" afterPath="$PROJECT_DIR$/demo.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/confusion_cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/confusion_cli.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/metrics/evaluator.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/metrics/evaluator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/gui.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/gui.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/augment/aug.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/augment/aug.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/aug_gui.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/aug_gui.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/aug_mode.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/aug_mode.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -99,7 +94,7 @@
       <recent name="G:\A_Share\YOLO-Model-Test\tests" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.demo2">
+  <component name="RunManager" selected="Python.aug_main">
     <configuration name="aug_main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="YOLO-Model-Test" />
       <option name="ENV_FILES" value="" />
@@ -306,10 +301,10 @@
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.aug_main" />
         <item itemvalue="Python.demo2" />
         <item itemvalue="Python.demo" />
         <item itemvalue="Python.main" />
-        <item itemvalue="Python.aug_main" />
         <item itemvalue="Python.test_aug" />
       </list>
     </recent_temporary>
@@ -337,7 +332,7 @@
       <workItem from="1751853208660" duration="20411000" />
       <workItem from="1752221731399" duration="613000" />
       <workItem from="1752459175168" duration="75734000" />
-      <workItem from="1752803339801" duration="24330000" />
+      <workItem from="1752803339801" duration="25309000" />
     </task>
     <servers />
   </component>
@@ -352,7 +347,7 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/YOLO_Model_Test$demo.coverage" NAME="demo Coverage Results" MODIFIED="1753067488826" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/YOLO_Model_Test$aug_main.coverage" NAME="aug_main Coverage Results" MODIFIED="1753064642113" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/YOLO_Model_Test$aug_main.coverage" NAME="aug_main Coverage Results" MODIFIED="1753084429198" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/YOLO_Model_Test$tools.coverage" NAME="tools Coverage Results" MODIFIED="1751856396784" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/YOLO_Model_Test$confusion_cli.coverage" NAME="confusion_cli Coverage Results" MODIFIED="1751357053798" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
     <SUITE FILE_PATH="coverage/YOLO_Model_Test$demo2.coverage" NAME="demo2 Coverage Results" MODIFIED="1753079157711" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

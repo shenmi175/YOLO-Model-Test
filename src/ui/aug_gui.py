@@ -3,7 +3,7 @@ from tkinter import ttk
 from utils.aug_mode import ToolTip, AugModeHelper
 from augment.aug import *
 
-DEFAULT_IMAGE = r'G:\A_Share\YOLO-Model-Test\test_data\test1\test2\22112604_002940.jpg'
+DEFAULT_IMAGE = r'G:\A_Share\YOLO-Model-Test\test_data\20221126152950_002730.jpg'
 
 class AugmentationGUI:
     def create_probability_control(self, frame, row, col_label=2, col_scale=3, text="概率:", default=0.5, command=None):
@@ -32,6 +32,7 @@ class AugmentationGUI:
         self.apply_Defocus=apply_Defocus
         self.apply_ZoomBlur=apply_ZoomBlur
         self.apply_OpticalDistortion=apply_OpticalDistortion
+        self.apply_bar_occlusion=apply_bar_occlusion
 
         self.helper = AugModeHelper(self)
 
@@ -142,6 +143,10 @@ class AugmentationGUI:
             {
                 'title': "光学扭曲",
                 'build_func': self.build_OpticalDistortion_group,
+            },
+            {
+                'title': "条状遮挡",
+                'build_func': self.build_bar_occlusion_group,
             },
         ]
 
@@ -764,6 +769,22 @@ class AugmentationGUI:
         self.Emboss_OpticalDistortion_label, self.OpticalDistortion_probability = self.create_probability_control(
             frame, row=3, col_label=2, col_scale=3, command=lambda v: self.helper.update_preview())
 
+    def build_bar_occlusion_group(self, frame):
+        self.use_bar_occlusion = tk.BooleanVar(value=False)
+        tk.Checkbutton(frame, text="启用", variable=self.use_bar_occlusion, command=self.helper.update_preview).grid(row=0, column=0, sticky='w')
+        tk.Label(frame, text="方向:").grid(row=1, column=0, sticky='e')
+        self.bar_orientation_var = tk.StringVar(value="both")
+        tk.OptionMenu(frame, self.bar_orientation_var, "horizontal", "vertical", "both", command=lambda _: self.helper.update_preview()).grid(row=1, column=1, sticky='w')
+        tk.Label(frame, text="条宽:").grid(row=2, column=0, sticky='e')
+        self.bar_width = tk.Scale(frame, from_=1, to=20, orient=tk.HORIZONTAL, length=100, command=lambda v: self.helper.update_preview())
+        self.bar_width.set(4)
+        self.bar_width.grid(row=2, column=1, sticky='w')
+        tk.Label(frame, text="间隔:").grid(row=3, column=0, sticky='e')
+        self.bar_gap = tk.Scale(frame, from_=10, to=100, orient=tk.HORIZONTAL, length=100, command=lambda v: self.helper.update_preview())
+        self.bar_gap.set(40)
+        self.bar_gap.grid(row=3, column=1, sticky='w')
+        self.bar_probability_label, self.bar_probability = self.create_probability_control(
+            frame, row=4, col_label=2, col_scale=3, command=lambda v: self.helper.update_preview())
 
 def run_gui():
     root = tk.Tk()

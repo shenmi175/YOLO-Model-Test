@@ -268,3 +268,56 @@ def apply_OpticalDistortion(image, distort_limit=(0.5, 0.5), interpolation=cv2.I
         p=1.0,
     )
     return _apply(transform, image, bboxes, labels, p)
+
+def apply_bar_occlusion(
+    image,
+    orientation="both",
+    stripe_width=4,
+    gap=40,
+    color=(0, 0, 0),
+    p=0.5,
+    bboxes=None,
+    labels=None,
+):
+    """Apply synthetic bar occlusion to simulate fences.
+
+    Parameters
+    ----------
+    image: ndarray
+        Input image in BGR format.
+    orientation: str, optional
+        ``"horizontal"``, ``"vertical"`` or ``"both"``. Default ``"both"``.
+    stripe_width: int, optional
+        Width of each occluding stripe in pixels. Default ``4``.
+    gap: int, optional
+        Gap between stripes in pixels. Default ``40``.
+    color: tuple[int, int, int], optional
+        BGR color of the stripes. Default black ``(0, 0, 0)``.
+    p: float, optional
+        Probability to apply the transform. Default ``0.5``.
+    bboxes: list | None, optional
+        Bounding boxes in Pascal VOC format. They are returned unchanged.
+    labels: list | None, optional
+        Corresponding labels. Unused but kept for API compatibility.
+
+    Returns
+    -------
+    tuple[np.ndarray, list, bool]
+        The transformed image, (unchanged) bboxes and whether the transform
+        was applied.
+    """
+    if random.random() >= p:
+        return image, bboxes, False
+
+    out = image.copy()
+    h, w = out.shape[:2]
+    if orientation in ("horizontal", "both"):
+        start = random.randint(0, gap)
+        for y in range(start, h, gap + stripe_width):
+            cv2.rectangle(out, (0, y), (w, min(y + stripe_width, h)), color, -1)
+    if orientation in ("vertical", "both"):
+        start = random.randint(0, gap)
+        for x in range(start, w, gap + stripe_width):
+            cv2.rectangle(out, (x, 0), (min(x + stripe_width, w), h), color, -1)
+
+    return out, bboxes, True
