@@ -466,6 +466,7 @@ class AugModeHelper:
         in_root = self.gui.input_root_var.get()
         out_root = self.gui.output_root_var.get()
         count = self.gui.augment_count_var.get()
+        times = getattr(self.gui, 'augment_times_var', tk.IntVar(value=1)).get()
         if not in_root or not out_root:
             messagebox.showerror("错误", "请设置输入和输出目录")
             return
@@ -480,6 +481,13 @@ class AugModeHelper:
         logging.info("Input root: %s", in_root)
         logging.info("Output root: %s", out_root)
         logging.info("Augment count: %d", count)
+        total = count * max(times, 1)
+        if hasattr(self.gui, 'progress'):
+            self.gui.progress["maximum"] = total
+            self.gui.progress["value"] = 0
+            self.gui.master.update_idletasks()
+
+        step = 0
         for idx, img_path in enumerate(images[:count], 1):
             logging.info("[%d/%d] %s", idx, count, img_path)
             img = cv2.imread(img_path)
@@ -489,15 +497,30 @@ class AugModeHelper:
                 bboxes, labels = self.parse_voc_xml(xml_path)
             else:
                 bboxes, labels = [], []
-            aug_img, aug_boxes, ops = self.apply_transforms(img, bboxes, labels)
+
             rel = Path(img_path).relative_to(in_root)
-            aug_name = rel.stem + "_aug" + rel.suffix
-            out_img = Path(out_root) / rel.with_name(aug_name)
-            ensure_dir(out_img.parent)
-            cv2.imwrite(str(out_img), aug_img)
-            if os.path.exists(xml_path):
-                out_xml = out_img.with_suffix('.xml')
-                self.update_annotation(xml_path, str(out_xml), aug_boxes, labels)
-            logging.info("Ops: %s", "; ".join(ops))
+            for t in range(max(times, 1)):
+                aug_img, aug_boxes, ops = self.apply_transforms(img, bboxes, labels)
+                if times > 1:
+                    aug_name = f"{rel.stem}_aug_{t + 1}{rel.suffix}"
+                else:
+                    aug_name = rel.stem + "_aug" + rel.suffix
+                out_img = Path(out_root) / rel.with_name(aug_name)
+                ensure_dir(out_img.parent)
+                cv2.imwrite(str(out_img), aug_img)
+                if os.path.exists(xml_path):
+                    out_xml = out_img.with_suffix('.xml')
+                    self.update_annotation(xml_path, str(out_xml), aug_boxes, labels)
+                logging.info("Ops: %s", "; ".join(ops))
+                step += 1
+                if hasattr(self.gui, 'progress'):
+                    self.gui.progress["value"] = step
+                    self.gui.master.update_idletasks()
+
+        if hasattr(self.gui, 'progress'):
+            self.gui.progress["value"] = total
+            self.gui.master.update_idletasks()
+        messagebox.showinfo("提示", "增强完成")
+
 
 

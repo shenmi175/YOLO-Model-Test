@@ -64,12 +64,20 @@ class AugmentationGUI:
         tk.Label(master, text="增强数量:").grid(row=4, column=0, sticky='e', padx=10)
         self.augment_count_var = tk.IntVar(value=1)
         tk.Entry(master, textvariable=self.augment_count_var, width=10).grid(row=4, column=1, sticky='w')
-        tk.Button(master, text="开始增强", command=self.helper.batch_augment).grid(row=4, column=2, sticky='w')
+
+        tk.Label(master, text="每图次数:").grid(row=4, column=2, sticky='e', padx=10)
+        self.augment_times_var = tk.IntVar(value=1)
+        tk.Entry(master, textvariable=self.augment_times_var, width=10).grid(row=4, column=3, sticky='w')
+
+        self.start_btn = tk.Button(master, text="开始增强", command=self.helper.batch_augment)
+        self.start_btn.grid(row=5, column=0, sticky='w', padx=10, pady=2)
+        self.progress = ttk.Progressbar(master, orient='horizontal', length=200, mode='determinate')
+        self.progress.grid(row=5, column=1, columnspan=3, sticky='we', padx=10)
 
         # ==== 可滚动参数区域 ====
         scroll_container = tk.Frame(master)
-        scroll_container.grid(row=5, column=0, columnspan=4, sticky='nsew')
-        master.grid_rowconfigure(5, weight=1)
+        scroll_container.grid(row=6, column=0, columnspan=4, sticky='nsew')
+        master.grid_rowconfigure(6, weight=1)
         master.grid_columnconfigure(0, weight=1)
 
         self.canvas = tk.Canvas(scroll_container, highlightthickness=0)
