@@ -5,12 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="757978fc-c7d2-4851-a074-3aa64ec6cd9e" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/tools/seame_img.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/AutoAnnotation/grounding_dino.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/augment/aug.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/augment/aug.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/aug_gui.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/aug_gui.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/aug_mode.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/aug_mode.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_aug.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_aug.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -68,9 +64,11 @@
     "Python.demo2.executor": "Run",
     "Python.main.executor": "Run",
     "Python.replace_code.executor": "Run",
+    "Python.review_imgs.executor": "Run",
     "Python.seame_img.executor": "Run",
     "Python.test_aug.executor": "Run",
     "Python.tools.executor": "Run",
+    "Python.video2imgs.executor": "Run",
     "Python.visualization.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
@@ -95,12 +93,12 @@
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="G:\A_Share\YOLO-Model-Test" />
-      <recent name="G:\A_Share\YOLO-Model-Test\example" />
       <recent name="G:\A_Share\YOLO-Model-Test\tools" />
+      <recent name="G:\A_Share\YOLO-Model-Test\example" />
       <recent name="G:\A_Share\YOLO-Model-Test\tests" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.seame_img">
+  <component name="RunManager" selected="Python.dataset_splitter">
     <configuration name="aug_main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="YOLO-Model-Test" />
       <option name="ENV_FILES" value="" />
@@ -147,7 +145,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="demo" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="review_imgs" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="YOLO-Model-Test" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -156,12 +154,12 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tools" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/demo.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/tools/review_imgs.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -193,7 +191,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="visualization" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="video2imgs" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="YOLO-Model-Test" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -202,12 +200,12 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/utils" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tools" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/utils/visualization.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/tools/video2imgs.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -254,7 +252,7 @@
       <option name="_new_targetType" value="&quot;PATH&quot;" />
       <method v="2" />
     </configuration>
-    <configuration name="pytest in tests_aug" type="tests" factoryName="py.test" nameIsGenerated="true">
+    <configuration name="pytest in G:/A_Share/YOLO-Model-Test/tests_aug" type="tests" factoryName="py.test" nameIsGenerated="true">
       <module name="YOLO-Model-Test" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -275,21 +273,20 @@
     </configuration>
     <list>
       <item itemvalue="Python.dataset_splitter" />
+      <item itemvalue="Python.review_imgs" />
       <item itemvalue="Python.seame_img" />
-      <item itemvalue="Python.visualization" />
-      <item itemvalue="Python.demo" />
+      <item itemvalue="Python.video2imgs" />
       <item itemvalue="Python.aug_main" />
-      <item itemvalue="Python tests.pytest in tests_aug" />
       <item itemvalue="Python tests.pytest in G:/A_Share/YOLO-Model-Test/tests_aug" />
       <item itemvalue="Python tests.pytest in G:\A_Share\YOLO-Model-Test\tests" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.dataset_splitter" />
+        <item itemvalue="Python.review_imgs" />
+        <item itemvalue="Python.video2imgs" />
         <item itemvalue="Python.seame_img" />
         <item itemvalue="Python.aug_main" />
-        <item itemvalue="Python.dataset_splitter" />
-        <item itemvalue="Python.demo" />
-        <item itemvalue="Python.visualization" />
       </list>
     </recent_temporary>
   </component>
@@ -319,7 +316,7 @@
       <workItem from="1752803339801" duration="25309000" />
       <workItem from="1753085210992" duration="29266000" />
       <workItem from="1753327771550" duration="2954000" />
-      <workItem from="1753341947328" duration="27911000" />
+      <workItem from="1753341947328" duration="39843000" />
     </task>
     <servers />
   </component>
@@ -338,12 +335,14 @@
     <SUITE FILE_PATH="coverage/YOLO_Model_Test$tools.coverage" NAME="tools Coverage Results" MODIFIED="1751856396784" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/YOLO_Model_Test$demo2.coverage" NAME="demo2 Coverage Results" MODIFIED="1753079157711" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/YOLO_Model_Test$test_aug.coverage" NAME="test_aug Coverage Results" MODIFIED="1752482147078" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/YOLO_Model_Test$video2imgs.coverage" NAME="video2imgs Coverage Results" MODIFIED="1753759157081" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools" />
     <SUITE FILE_PATH="coverage/YOLO_Model_Test$seame_img.coverage" NAME="seame_img Coverage Results" MODIFIED="1753698827321" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools" />
     <SUITE FILE_PATH="coverage/YOLO_Model_Test$visualization.coverage" NAME="visualization Coverage Results" MODIFIED="1751427877072" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/utils" />
     <SUITE FILE_PATH="coverage/YOLO_Model_Test$.coverage" NAME=" Coverage Results" MODIFIED="1752461918846" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests_aug" />
-    <SUITE FILE_PATH="coverage/YOLO_Model_Test$dataset_splitter.coverage" NAME="dataset_splitter Coverage Results" MODIFIED="1753667151475" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools" />
+    <SUITE FILE_PATH="coverage/YOLO_Model_Test$dataset_splitter.coverage" NAME="dataset_splitter Coverage Results" MODIFIED="1753760670449" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools" />
     <SUITE FILE_PATH="coverage/YOLO_Model_Test$confusion_cli.coverage" NAME="confusion_cli Coverage Results" MODIFIED="1751357053798" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
     <SUITE FILE_PATH="coverage/YOLO_Model_Test$main.coverage" NAME="main Coverage Results" MODIFIED="1753065515599" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/YOLO_Model_Test$review_imgs.coverage" NAME="review_imgs Coverage Results" MODIFIED="1753759234505" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools" />
     <SUITE FILE_PATH="coverage/YOLO_Model_Test$replace_code.coverage" NAME="replace_code Coverage Results" MODIFIED="1751354948193" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
