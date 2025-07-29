@@ -13,7 +13,7 @@ import shutil
 from pathlib import Path
 import tkinter as tk
 from tkinter import filedialog, ttk, messagebox
-
+from typing import Iterable
 
 def list_subdirs(root: Path) -> list[Path]:
     """Return all subdirectories under ``root`` (recursively), sorted."""
@@ -47,12 +47,50 @@ def unique_paths(img_path: Path, txt_path: Path, img_dst: Path, lbl_dst: Path) -
     return new_img, new_txt
 
 
-def copy_pairs(pairs: list[tuple[Path, Path]], img_dst: Path, lbl_dst: Path, progress: ttk.Progressbar | None = None) -> None:
+def find_conflicts(
+    pairs: Iterable[tuple[Path, Path]],
+    img_dst: Path,
+    lbl_dst: Path,
+) -> list[str]:
+    """Return list of file names that would conflict in the destination."""
+    conflicts: list[str] = []
+    seen_imgs: set[str] = set()
+    seen_lbls: set[str] = set()
+    for img, txt in pairs:
+        img_name = img.name
+        lbl_name = txt.name
+        if img_name in seen_imgs or (img_dst / img_name).exists():
+            conflicts.append(img_name)
+        if lbl_name in seen_lbls or (lbl_dst / lbl_name).exists():
+            conflicts.append(lbl_name)
+        seen_imgs.add(img_name)
+        seen_lbls.add(lbl_name)
+    return conflicts
+
+
+def copy_pairs(
+    pairs: list[tuple[Path, Path]],
+    img_dst: Path,
+    lbl_dst: Path,
+    progress: ttk.Progressbar | None = None,
+    *,
+    rename_duplicates: bool = True,
+) -> int:
+    """Copy ``pairs`` into the destination folders.
+
+    Returns the number of copied images.
+    """
     total = len(pairs)
     if progress is not None:
         progress["maximum"] = total
     for idx, (img, txt) in enumerate(pairs, 1):
-        dst_img, dst_txt = unique_paths(img, txt, img_dst, lbl_dst)
+        if rename_duplicates:
+            dst_img, dst_txt = unique_paths(img, txt, img_dst, lbl_dst)
+        else:
+            dst_img = img_dst / img.name
+            dst_txt = lbl_dst / txt.name
+            if dst_img.exists() or dst_txt.exists():
+                raise FileExistsError(f"Conflicting file: {dst_img} or {dst_txt}")
         dst_img.parent.mkdir(parents=True, exist_ok=True)
         dst_txt.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(img, dst_img)
@@ -60,6 +98,7 @@ def copy_pairs(pairs: list[tuple[Path, Path]], img_dst: Path, lbl_dst: Path, pro
         if progress is not None:
             progress["value"] = idx
             progress.update_idletasks()
+    return total
 
 
 def launch() -> None:
@@ -156,7 +195,26 @@ def launch() -> None:
         if not pairs:
             messagebox.showinfo("Dataset Splitter", "No files found")
             return
-        copy_pairs(pairs, img_dst, lbl_dst, progress)
+
+        conflicts = find_conflicts(pairs, img_dst, lbl_dst)
+        if conflicts:
+            print(f"{len(conflicts)} files conflict with the output directory")
+            rename = messagebox.askyesno(
+                "Rename Conflicts",
+                "Conflicting filenames detected. Rename duplicates before copying?",
+            )
+            if not rename:
+                messagebox.showinfo("Dataset Splitter", "Operation cancelled")
+                return
+        else:
+            rename = False
+
+        try:
+            moved = copy_pairs(pairs, img_dst, lbl_dst, progress, rename_duplicates=rename or bool(conflicts))
+        except FileExistsError as exc:
+            messagebox.showerror("Error", str(exc))
+            return
+        print(f"Moved {moved} images")
         messagebox.showinfo("Dataset Splitter", "Done")
 
     tk.Button(root, text="Start", command=start).grid(row=5, columnspan=4, pady=5)
