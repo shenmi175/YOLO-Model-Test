@@ -53,12 +53,12 @@ class AugmentationGUI:
         self.select_btn.grid(row=1, column=0, padx=10, pady=2, sticky='w')
         tk.Label(master, text="增强根目录:").grid(row=2, column=0, sticky='e', padx=10)
         self.input_root_var = tk.StringVar()
-        tk.Entry(master, textvariable=self.input_root_var, width=40).grid(row=2, column=1, sticky='w')
+        tk.Entry(master, textvariable=self.input_root_var, width=80).grid(row=2, column=1, sticky='w')
         tk.Button(master, text="浏览", command=self.helper.browse_input_root).grid(row=2, column=2, sticky='w')
 
         tk.Label(master, text="输出根目录:").grid(row=3, column=0, sticky='e', padx=10)
         self.output_root_var = tk.StringVar()
-        tk.Entry(master, textvariable=self.output_root_var, width=40).grid(row=3, column=1, sticky='w')
+        tk.Entry(master, textvariable=self.output_root_var, width=80).grid(row=3, column=1, sticky='w')
         tk.Button(master, text="浏览", command=self.helper.browse_output_root).grid(row=3, column=2, sticky='w')
 
         tk.Label(master, text="增强数量:").grid(row=4, column=0, sticky='e', padx=10)
@@ -784,13 +784,23 @@ class AugmentationGUI:
         self.bar_orientation_var = tk.StringVar(value="both")
         tk.OptionMenu(frame, self.bar_orientation_var, "horizontal", "vertical", "both", command=lambda _: self.helper.update_preview()).grid(row=1, column=1, sticky='w')
         tk.Label(frame, text="条宽:").grid(row=2, column=0, sticky='e')
-        self.bar_width = tk.Scale(frame, from_=1, to=20, orient=tk.HORIZONTAL, length=100, command=lambda v: self.helper.update_preview())
-        self.bar_width.set(4)
-        self.bar_width.grid(row=2, column=1, sticky='w')
+        self.bar_width_min = tk.Scale(frame, from_=1, to=20, orient=tk.HORIZONTAL, length=100,
+                                      command=lambda v: self.helper.slider_pair_link(self.bar_width_min, self.bar_width_max))
+        self.bar_width_min.set(4)
+        self.bar_width_min.grid(row=2, column=1, sticky='w')
+        self.bar_width_max = tk.Scale(frame, from_=1, to=20, orient=tk.HORIZONTAL, length=100,
+                                      command=lambda v: self.helper.slider_pair_link(self.bar_width_min, self.bar_width_max))
+        self.bar_width_max.set(4)
+        self.bar_width_max.grid(row=2, column=2, sticky='w')
         tk.Label(frame, text="间隔:").grid(row=3, column=0, sticky='e')
-        self.bar_gap = tk.Scale(frame, from_=10, to=100, orient=tk.HORIZONTAL, length=100, command=lambda v: self.helper.update_preview())
-        self.bar_gap.set(40)
-        self.bar_gap.grid(row=3, column=1, sticky='w')
+        self.bar_gap_min = tk.Scale(frame, from_=10, to=100, orient=tk.HORIZONTAL, length=100,
+                                    command=lambda v: self.helper.slider_pair_link(self.bar_gap_min, self.bar_gap_max))
+        self.bar_gap_min.set(40)
+        self.bar_gap_min.grid(row=3, column=1, sticky='w')
+        self.bar_gap_max = tk.Scale(frame, from_=10, to=100, orient=tk.HORIZONTAL, length=100,
+                                    command=lambda v: self.helper.slider_pair_link(self.bar_gap_min, self.bar_gap_max))
+        self.bar_gap_max.set(40)
+        self.bar_gap_max.grid(row=3, column=2, sticky='w')
         self.bar_probability_label, self.bar_probability = self.create_probability_control(
             frame, row=4, col_label=2, col_scale=3, command=lambda v: self.helper.update_preview())
 

@@ -272,9 +272,9 @@ def apply_OpticalDistortion(image, distort_limit=(0.5, 0.5), interpolation=cv2.I
 def apply_bar_occlusion(
     image,
     orientation="both",
-    stripe_width=4,
-    gap=40,
-    color=(0, 0, 0),
+    stripe_width_range=4,
+    gap_range=40,
+    color=None,
     p=0.5,
     bboxes=None,
     labels=None,
@@ -287,12 +287,14 @@ def apply_bar_occlusion(
         Input image in BGR format.
     orientation: str, optional
         ``"horizontal"``, ``"vertical"`` or ``"both"``. Default ``"both"``.
-    stripe_width: int, optional
-        Width of each occluding stripe in pixels. Default ``4``.
-    gap: int, optional
-        Gap between stripes in pixels. Default ``40``.
-    color: tuple[int, int, int], optional
-        BGR color of the stripes. Default black ``(0, 0, 0)``.
+    stripe_width_range: int | tuple[int, int], optional
+        Width of each occluding stripe in pixels or a range ``(min, max)`` to
+        sample from. Default ``4``.
+    gap_range: int | tuple[int, int], optional
+        Gap between stripes in pixels or a range ``(min, max)``. Default ``40``.
+     color: tuple[int, int, int] | Sequence[tuple[int, int, int]] | None, optional
+        Single BGR color or a sequence of colors to choose from. ``None`` uses a
+        predefined palette of black, white, red, yellow, blue and green.
     p: float, optional
         Probability to apply the transform. Default ``0.5``.
     bboxes: list | None, optional
@@ -308,16 +310,45 @@ def apply_bar_occlusion(
     """
     if random.random() >= p:
         return image, bboxes, False
+    # Normalize range parameters
+    if isinstance(stripe_width_range, (list, tuple)):
+        w_min, w_max = stripe_width_range
+    else:
+        w_min = w_max = stripe_width_range
+
+    if isinstance(gap_range, (list, tuple)):
+        g_min, g_max = gap_range
+    else:
+        g_min = g_max = gap_range
+
+    stripe_width = random.randint(int(w_min), int(w_max))
+    gap = random.randint(int(g_min), int(g_max))
+
+    # Choose color
+    if color is None:
+        palette = [
+            (0, 0, 0),       # black
+            (255, 255, 255), # white
+            (0, 0, 255),     # red
+            (0, 255, 255),   # yellow
+            (255, 0, 0),     # blue
+            (0, 255, 0),     # green
+        ]
+        chosen = random.choice(palette)
+    elif isinstance(color, (list, tuple)) and color and isinstance(color[0], (list, tuple)):
+        chosen = random.choice(color)
+    else:
+        chosen = color
 
     out = image.copy()
     h, w = out.shape[:2]
     if orientation in ("horizontal", "both"):
         start = random.randint(0, gap)
         for y in range(start, h, gap + stripe_width):
-            cv2.rectangle(out, (0, y), (w, min(y + stripe_width, h)), color, -1)
+            cv2.rectangle(out, (0, y), (w, min(y + stripe_width, h)), chosen, -1)
     if orientation in ("vertical", "both"):
         start = random.randint(0, gap)
         for x in range(start, w, gap + stripe_width):
-            cv2.rectangle(out, (x, 0), (min(x + stripe_width, w), h), color, -1)
+            cv2.rectangle(out, (x, 0), (min(x + stripe_width, w), h), chosen, -1)
 
     return out, bboxes, True

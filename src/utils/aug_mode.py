@@ -189,6 +189,9 @@ class AugModeHelper:
 
     def apply_transforms(self, image, bboxes, labels):
         """Apply enabled transformations and return result with log list."""
+        if image is None:
+            raise ValueError("Input image is None")
+            print("Input image is None")
         aug_img = image.copy()
         ops = []
 
@@ -257,7 +260,7 @@ class AugModeHelper:
                 f"sampling_method={self.gui.sampling_method_var.get()} "
                 f"p={self.gui.Planckian_Jitter_probability.get()}"
             )
-            aug_img, bboxes = self.gui.apply_PlanckianJitter(
+            aug_img, bboxes,_ = self.gui.apply_PlanckianJitter(
                 aug_img,
                 mode=self.gui.mode_var.get(),
                 sampling_method=self.gui.sampling_method_var.get(),
@@ -418,8 +421,8 @@ class AugModeHelper:
             aug_img, bboxes, applied = self.gui.apply_bar_occlusion(
                 aug_img,
                 orientation=self.gui.bar_orientation_var.get(),
-                stripe_width=self.gui.bar_width.get(),
-                gap=self.gui.bar_gap.get(),
+                stripe_width_range=(self.gui.bar_width_min.get(), self.gui.bar_width_max.get()),
+                gap_range=(self.gui.bar_gap_min.get(), self.gui.bar_gap_max.get()),
                 p=self.gui.bar_probability.get(),
                 bboxes=bboxes,
                 labels=labels,
@@ -428,7 +431,8 @@ class AugModeHelper:
                 ops.append(
                     "BarOcclusion "
                     f"orientation={self.gui.bar_orientation_var.get()} "
-                    f"width={self.gui.bar_width.get()} gap={self.gui.bar_gap.get()}"
+                    f"width=({self.gui.bar_width_min.get()}, {self.gui.bar_width_max.get()}) "
+                    f"gap=({self.gui.bar_gap_min.get()}, {self.gui.bar_gap_max.get()})"
                 )
 
         return aug_img, bboxes, ops
@@ -491,6 +495,9 @@ class AugModeHelper:
         for idx, img_path in enumerate(images[:count], 1):
             logging.info("[%d/%d] %s", idx, count, img_path)
             img = cv2.imread(img_path)
+            if img is None:
+                logging.error("Failed to read image: %s", img_path)
+                continue
             base, _ = os.path.splitext(img_path)
             xml_path = base + ".xml"
             if os.path.exists(xml_path):
