@@ -31,7 +31,10 @@ class GroundingDinoPredictor:
         text_threshold: float,
     ) -> List[Tuple[List[List[float]], List[str], List[float], Tuple[int, int]]]:
         """Run inference on ``image_paths`` and return detection results."""
-        images = [Image.open(p).convert("RGB") for p in image_paths]
+        images = []
+        for path in image_paths:
+            with Image.open(path) as img:
+                images.append(img.convert("RGB"))
         inputs = self.processor(images=images, text=[text_labels] * len(images), return_tensors="pt").to(self.device)
         with torch.no_grad():
             outputs = self.model(**inputs)

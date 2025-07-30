@@ -15,6 +15,12 @@ from dino_predictor import GroundingDinoPredictor
 from xml_utils import save_voc_xml
 
 
+def iter_images(root_dir: Path, exts: set[str]):
+    """Yield image paths under ``root_dir`` matching ``exts``."""
+    for p in root_dir.rglob("*"):
+        if p.suffix.lower() in exts:
+            yield p
+
 _DEF_BATCH = 4
 
 
@@ -31,19 +37,35 @@ def run_batch(
     img_root = Path(img_root)
     xml_root = Path(xml_root)
     exts = {".jpg", ".jpeg", ".png", ".bmp"}
-    images = [p for p in img_root.rglob("*") if p.suffix.lower() in exts]
+    total = sum(1 for _ in iter_images(img_root, exts))
+    pbar = tqdm(total=total, desc="Processing", unit="img")
 
-    pbar = tqdm(total=len(images), desc="Processing", unit="img")
-    for i in range(0, len(images), batch_size):
-        batch_paths = images[i : i + batch_size]
+    image_iter = iter_images(img_root, exts)
+    batch_paths: list[Path] = []
+    for img_path in image_iter:
+        batch_paths.append(img_path)
+        if len(batch_paths) < batch_size:
+            continue
         results = predictor.predict(
             [str(p) for p in batch_paths], text_labels, box_threshold, text_threshold
         )
-        for img_path, (boxes, labels, scores, size) in zip(batch_paths, results):
-            rel = img_path.relative_to(img_root)
+        for path, (boxes, labels, scores, size) in zip(batch_paths, results):
+            rel = path.relative_to(img_root)
             xml_path = xml_root / rel.with_suffix(".xml")
-            save_voc_xml(xml_path, img_path.name, size, boxes, labels, scores)
+            save_voc_xml(xml_path, path.name, size, boxes, labels, scores)
             pbar.update(1)
+        batch_paths = []
+
+    if batch_paths:
+        results = predictor.predict(
+            [str(p) for p in batch_paths], text_labels, box_threshold, text_threshold
+        )
+        for path, (boxes, labels, scores, size) in zip(batch_paths, results):
+            rel = path.relative_to(img_root)
+            xml_path = xml_root / rel.with_suffix(".xml")
+            save_voc_xml(xml_path, path.name, size, boxes, labels, scores)
+            pbar.update(1)
+
     pbar.close()
 
 
