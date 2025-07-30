@@ -1,5 +1,9 @@
 from __future__ import annotations
+"""Utilities for zero-shot detection using Grounding DINO.
 
+The implementation follows the example usage from the official
+documentation: https://huggingface.co/docs/transformers/model_doc/grounding-dino
+"""
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Sequence, List, Tuple
@@ -20,8 +24,11 @@ class GroundingDinoPredictor:
     def __post_init__(self) -> None:
         self.processor = AutoProcessor.from_pretrained(self.model_id, cache_dir=str(self.cache_dir))
         self.model = AutoModelForZeroShotObjectDetection.from_pretrained(
-            self.model_id, cache_dir=str(self.cache_dir)
+            self.model_id,
+            cache_dir=str(self.cache_dir),
+            torch_dtype=torch.float16 if self.device.startswith("cuda") else torch.float32,
         ).to(self.device)
+        self.model.eval()
 
     def predict(
         self,
@@ -31,11 +38,11 @@ class GroundingDinoPredictor:
         text_threshold: float,
     ) -> List[Tuple[List[List[float]], List[str], List[float], Tuple[int, int]]]:
         """Run inference on ``image_paths`` and return detection results."""
-        images = []
-        for path in image_paths:
-            with Image.open(path) as img:
-                images.append(img.convert("RGB"))
-        inputs = self.processor(images=images, text=[text_labels] * len(images), return_tensors="pt").to(self.device)
+        images = [Image.open(p).convert("RGB") for p in image_paths]
+        # According to the official documentation, multiple queries should be
+        # concatenated with a trailing period so the model can parse them.
+        text_prompt = ". ".join(text_labels) + "."
+        inputs = self.processor(images=images, text=[text_prompt] * len(images), return_tensors="pt").to(self.device)
         with torch.no_grad():
             outputs = self.model(**inputs)
         results = self.processor.post_process_grounded_object_detection(
@@ -52,5 +59,6 @@ class GroundingDinoPredictor:
             labels = res["labels"]
             scores = res["scores"].cpu().tolist()
             detections.append((boxes, labels, scores, img.size))
-            # print(detections)
+            if self.device.startswith("cuda"):
+                torch.cuda.empty_cache()
         return detections

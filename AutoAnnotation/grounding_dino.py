@@ -6,16 +6,13 @@
       archivePrefix={arXiv},
       primaryClass={cs.CV}
 }"""
+# 示例脚本，用于单张图像的推理与结果展示
 
 import requests
 import torch
 from PIL import Image, ImageDraw
 from IPython.display import display
 from transformers import AutoProcessor, AutoModelForZeroShotObjectDetection
-
-import os
-os.environ['http_proxy'] = 'http://127.0.0.1:7897'
-os.environ['https_proxy'] = 'http://127.0.0.1:7897'
 
 
 model_id = "IDEA-Research/grounding-dino-base"
