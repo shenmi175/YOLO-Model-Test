@@ -5,7 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="757978fc-c7d2-4851-a074-3aa64ec6cd9e" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/AutoAnnotation/grounding_dino.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/AutoAnnotation/batch_grounding_dino.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/AutoAnnotation/dino_predictor.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/AutoAnnotation/xml_utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -58,6 +61,7 @@
     "Python tests.Python tests in test_full_pipeline.py.executor": "Run",
     "Python tests.Python tests in test_gui_run.py.executor": "Run",
     "Python.aug_main.executor": "Run",
+    "Python.batch_grounding_dino.executor": "Run",
     "Python.confusion_cli.executor": "Run",
     "Python.dataset_splitter.executor": "Run",
     "Python.demo.executor": "Run",
@@ -98,8 +102,8 @@
       <recent name="G:\A_Share\YOLO-Model-Test\tests" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.dataset_splitter">
-    <configuration name="aug_main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="Python.batch_grounding_dino">
+    <configuration name="batch_grounding_dino" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="YOLO-Model-Test" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -108,12 +112,12 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/AutoAnnotation" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/aug_main.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/AutoAnnotation/batch_grounding_dino.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -272,21 +276,21 @@
       <method v="2" />
     </configuration>
     <list>
+      <item itemvalue="Python.batch_grounding_dino" />
       <item itemvalue="Python.dataset_splitter" />
       <item itemvalue="Python.review_imgs" />
       <item itemvalue="Python.seame_img" />
       <item itemvalue="Python.video2imgs" />
-      <item itemvalue="Python.aug_main" />
       <item itemvalue="Python tests.pytest in G:/A_Share/YOLO-Model-Test/tests_aug" />
       <item itemvalue="Python tests.pytest in G:\A_Share\YOLO-Model-Test\tests" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.batch_grounding_dino" />
         <item itemvalue="Python.dataset_splitter" />
         <item itemvalue="Python.review_imgs" />
         <item itemvalue="Python.video2imgs" />
         <item itemvalue="Python.seame_img" />
-        <item itemvalue="Python.aug_main" />
       </list>
     </recent_temporary>
   </component>
@@ -335,14 +339,17 @@
     <SUITE FILE_PATH="coverage/YOLO_Model_Test$tools.coverage" NAME="tools Coverage Results" MODIFIED="1751856396784" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/YOLO_Model_Test$demo2.coverage" NAME="demo2 Coverage Results" MODIFIED="1753079157711" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/YOLO_Model_Test$test_aug.coverage" NAME="test_aug Coverage Results" MODIFIED="1752482147078" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/YOLO_Model_Test$grounding_dino.coverage" NAME="grounding_dino Coverage Results" MODIFIED="1753857194792" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/AutoAnnotation" />
     <SUITE FILE_PATH="coverage/YOLO_Model_Test$video2imgs.coverage" NAME="video2imgs Coverage Results" MODIFIED="1753759157081" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools" />
     <SUITE FILE_PATH="coverage/YOLO_Model_Test$seame_img.coverage" NAME="seame_img Coverage Results" MODIFIED="1753698827321" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools" />
     <SUITE FILE_PATH="coverage/YOLO_Model_Test$visualization.coverage" NAME="visualization Coverage Results" MODIFIED="1751427877072" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/utils" />
     <SUITE FILE_PATH="coverage/YOLO_Model_Test$.coverage" NAME=" Coverage Results" MODIFIED="1752461918846" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests_aug" />
-    <SUITE FILE_PATH="coverage/YOLO_Model_Test$dataset_splitter.coverage" NAME="dataset_splitter Coverage Results" MODIFIED="1753760670449" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools" />
+    <SUITE FILE_PATH="coverage/YOLO_Model_Test$dataset_splitter.coverage" NAME="dataset_splitter Coverage Results" MODIFIED="1753861589781" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools" />
     <SUITE FILE_PATH="coverage/YOLO_Model_Test$confusion_cli.coverage" NAME="confusion_cli Coverage Results" MODIFIED="1751357053798" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
+    <SUITE FILE_PATH="coverage/YOLO_Model_Test$batch_grounding_dino.coverage" NAME="batch_grounding_dino Coverage Results" MODIFIED="1753865592354" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/AutoAnnotation" />
     <SUITE FILE_PATH="coverage/YOLO_Model_Test$main.coverage" NAME="main Coverage Results" MODIFIED="1753065515599" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/YOLO_Model_Test$review_imgs.coverage" NAME="review_imgs Coverage Results" MODIFIED="1753759234505" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools" />
     <SUITE FILE_PATH="coverage/YOLO_Model_Test$replace_code.coverage" NAME="replace_code Coverage Results" MODIFIED="1751354948193" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/YOLO_Model_Test$batch_grouding_dino.coverage" NAME="batch_grouding_dino Coverage Results" MODIFIED="1753860841320" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/AutoAnnotation" />
   </component>
 </project>
