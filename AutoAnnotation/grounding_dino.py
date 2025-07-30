@@ -13,17 +13,23 @@ from PIL import Image, ImageDraw
 from IPython.display import display
 from transformers import AutoProcessor, AutoModelForZeroShotObjectDetection
 
+import os
+os.environ['http_proxy'] = 'http://127.0.0.1:7897'
+os.environ['https_proxy'] = 'http://127.0.0.1:7897'
+
+
 model_id = "IDEA-Research/grounding-dino-base"
+save_dir = "../models/grounding-dino-base"  # 指定本地目录
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
-processor = AutoProcessor.from_pretrained(model_id)
-model = AutoModelForZeroShotObjectDetection.from_pretrained(model_id).to(device)
+processor = AutoProcessor.from_pretrained(model_id, cache_dir=save_dir)
+model = AutoModelForZeroShotObjectDetection.from_pretrained(model_id, cache_dir=save_dir).to(device)
 
 # Check for cats and remote controls
 # VERY important: text queries need to be lowercased + end with a dot
 
 
-image_path = "/kaggle/working/cats/['cat']_1_0.76.jpg"
+image_path = "../test_data/20221126152950_002730.jpg"
 image = Image.open(image_path)
 
 
