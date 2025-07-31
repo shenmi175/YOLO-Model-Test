@@ -268,7 +268,7 @@ if __name__ == "__main__":
 
     # 使用示例
     # 输入输出路径、帧率、是否调整图片尺寸(默认不调整)、目标尺寸（与resize一起使用）
-    # python video2imgs.py I:\allShare\1zmb\datas\datasets\error\test\error4 I:\allShare\1zmb\datas\datasets\error\test/output_images --interval 10 --resize --size 1920 1080
+    # python 1_video2imgs.py I:\allShare\1zmb\datas\datasets\error\test\error4 I:\allShare\1zmb\datas\datasets\error\test/output_images --interval 10 --resize --size 1920 1080
 
 
 

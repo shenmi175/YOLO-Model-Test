@@ -4,6 +4,22 @@ from PIL import Image
 from tqdm import tqdm
 from tkinter import Tk, Label, Button, filedialog, messagebox, Listbox, Scrollbar, END, StringVar, Entry, Frame, BooleanVar, Checkbutton
 import threading
+import json
+import numpy as np
+
+CACHE_FILE = os.path.join(os.path.dirname(__file__), 'hash_cache.json')
+try:
+    with open(CACHE_FILE, 'r', encoding='utf-8') as f:
+        HASH_CACHE = json.load(f)
+except Exception:
+    HASH_CACHE = {}
+
+def save_cache():
+    try:
+        with open(CACHE_FILE, 'w', encoding='utf-8') as f:
+            json.dump(HASH_CACHE, f)
+    except Exception as e:
+        print(f"Failed to save cache: {e}")
 
 def is_image(filename):
     exts = ('.jpg', '.jpeg', '.png', '.bmp', '.gif', '.tif', '.tiff', '.webp')
@@ -16,21 +32,71 @@ def file_md5(path):
             hasher.update(chunk)
     return hasher.hexdigest()
 
-def collect_image_hashes(folder):
-    img_hash_map = {}
+def average_hash(img, hash_size=8):
+    img = img.convert('L').resize((hash_size, hash_size), Image.LANCZOS)
+    pixels = np.asarray(img, dtype=np.float32)
+    avg = pixels.mean()
+    diff = pixels >= avg
+    bits = 0
+    for bit in diff.flatten():
+        bits = (bits << 1) | int(bit)
+    return format(bits, f'0{hash_size * hash_size // 4}x')
+
+def file_phash(path, hash_size=8):
+    try:
+        with Image.open(path) as img:
+            return average_hash(img, hash_size)
+    except Exception:
+        return None
+
+def hash_similarity(h1, h2, bits=64):
+    if not h1 or not h2:
+        return 0
+    v1 = int(h1, 16)
+    v2 = int(h2, 16)
+    dist = bin(v1 ^ v2).count('1')
+    return 1 - dist / bits
+
+def collect_image_hashes(folder, modes=("md5",)):
+    """Collect hashes for all images under ``folder``.
+
+    Parameters
+    ----------
+    folder : str
+        Folder path to scan.
+    modes : tuple
+        Tuple containing "md5" and/or "phash" to indicate which hashes to
+        compute.
+    """
+    result = {m: {} for m in modes}
     all_img_files = []
     for root, _, files in os.walk(folder):
         for f in files:
             if is_image(f):
-                fp = os.path.join(root, f)
-                all_img_files.append(fp)
+                all_img_files.append(os.path.join(root, f))
+
     for fp in tqdm(all_img_files, desc=f"扫描 {folder} 图片", ncols=120):
         try:
-            h = file_md5(fp)
-            img_hash_map.setdefault(h, []).append(fp)
+            mtime = os.path.getmtime(fp)
+            cache = HASH_CACHE.get(fp)
+            md5 = phash = None
+            if cache and cache.get('mtime') == mtime:
+                md5 = cache.get('md5')
+                phash = cache.get('phash')
+            else:
+                if 'md5' in modes:
+                    md5 = file_md5(fp)
+                if 'phash' in modes:
+                    phash = file_phash(fp)
+                HASH_CACHE[fp] = {'mtime': mtime, 'md5': md5, 'phash': phash}
+            if 'md5' in modes and md5 is not None:
+                result['md5'].setdefault(md5, []).append(fp)
+            if 'phash' in modes and phash is not None:
+                result['phash'].setdefault(phash, []).append(fp)
         except Exception as e:
             print(f"Cannot hash {fp}: {e}")
-    return img_hash_map
+    save_cache()
+    return result
 
 def find_common_hashes(map1, map2):
     common = set(map1.keys()) & set(map2.keys())
@@ -39,6 +105,18 @@ def find_common_hashes(map1, map2):
         files1.extend(map1[h])
         files2.extend(map2[h])
     return common, files1, files2
+
+def find_similar_hashes(map1, map2, threshold=0.9, bits=64):
+    """Find pairs of images whose perceptual hash similarity exceeds threshold."""
+    pairs = []  # (file1, file2, similarity)
+    for h1, files1 in map1.items():
+        for h2, files2 in map2.items():
+            sim = hash_similarity(h1, h2, bits)
+            if sim >= threshold:
+                for f1 in files1:
+                    for f2 in files2:
+                        pairs.append((f1, f2, sim))
+    return pairs
 
 def delete_files(file_list, label_dir=None, xml_dir=None):
     count, failed = 0, 0
@@ -196,17 +274,25 @@ class HashCompareFrame(Frame):
         self.xml2_var = StringVar()
         Entry(self, textvariable=self.xml2_var, width=35).grid(row=6, column=1, sticky='w')
         Button(self, text="选择", command=self.select_xml2).grid(row=6, column=2, sticky='w')
+        self.use_md5 = BooleanVar(value=True)
+        self.use_phash = BooleanVar(value=False)
+        Checkbutton(self, text="精确匹配(MD5)", variable=self.use_md5).grid(row=7, column=0, sticky='w')
+        Checkbutton(self, text="相似匹配(pHash)", variable=self.use_phash).grid(row=7, column=1, sticky='w')
         self.compare_btn = Button(self, text="开始比对", command=self.thread_compare)
-        self.compare_btn.grid(row=7, column=1, pady=7, sticky='w')
+        self.compare_btn.grid(row=8, column=1, pady=7, sticky='w')
         self.status = Label(self, text="", fg='blue')
-        self.status.grid(row=8, column=0, columnspan=4, sticky='w')
+        self.status.grid(row=9, column=0, columnspan=4, sticky='w')
         # 重复文件列表
-        self.listbox = Listbox(self, selectmode='single', width=80, height=8)
-        self.listbox.grid(row=9, column=0, columnspan=4)
+        Label(self, text="重复文件:").grid(row=10, column=0, sticky='w')
+        self.listbox = Listbox(self, selectmode='single', width=80, height=5)
+        self.listbox.grid(row=11, column=0, columnspan=4)
+        Label(self, text="相似文件:").grid(row=12, column=0, sticky='w')
+        self.sim_listbox = Listbox(self, selectmode='single', width=80, height=5)
+        self.sim_listbox.grid(row=13, column=0, columnspan=4)
         self.common_files1 = []
         self.common_files2 = []
-        Button(self, text="删除文件夹1中重复图片及标注", command=lambda: self.thread_delete(1)).grid(row=10, column=1, pady=4, sticky='e')
-        Button(self, text="删除文件夹2中重复图片及标注", command=lambda: self.thread_delete(2)).grid(row=10, column=2, pady=4, sticky='w')
+        Button(self, text="删除文件夹1中重复图片及标注", command=lambda: self.thread_delete(1)).grid(row=14, column=1, pady=4, sticky='e')
+        Button(self, text="删除文件夹2中重复图片及标注", command=lambda: self.thread_delete(2)).grid(row=14, column=2, pady=4, sticky='w')
 
     def select_img1(self): self._select_dir(self.img1_var)
     def select_txt1(self): self._select_dir(self.txt1_var)
@@ -230,22 +316,48 @@ class HashCompareFrame(Frame):
             self.status.config(text="请先填写或选择两个图片目录")
             self.compare_btn.config(state='normal')
             return
-        map1 = collect_image_hashes(img1)
-        map2 = collect_image_hashes(img2)
-        common, files1, files2 = find_common_hashes(map1, map2)
-        self.common_files1 = files1
-        self.common_files2 = files2
+        modes = []
+        if self.use_md5.get():
+            modes.append('md5')
+        if self.use_phash.get():
+            modes.append('phash')
+        if not modes:
+            self.status.config(text="请至少选择一种比对模式")
+            self.compare_btn.config(state='normal')
+            return
+
+        hashes1 = collect_image_hashes(img1, tuple(modes))
+        hashes2 = collect_image_hashes(img2, tuple(modes))
+
         self.listbox.delete(0, END)
-        show_num = min(100, len(files1))
-        for i in range(show_num):
-            self.listbox.insert(
-                END,
-                os.path.relpath(files1[i], img1) + "  <==>  " +
-                os.path.relpath(files2[i], img2)
-            )
-        info = f"共有 {len(common)} 组相同图片，文件夹1中{len(files1)}张，文件夹2中{len(files2)}张（只显示前{show_num}项）"
-        self.status.config(text=info)
-        if not common:
+        self.sim_listbox.delete(0, END)
+        info_parts = []
+        if 'md5' in modes:
+            common, files1, files2 = find_common_hashes(hashes1['md5'], hashes2['md5'])
+            self.common_files1 = files1
+            self.common_files2 = files2
+            show_num = min(1000, len(files1))
+            for i in range(show_num):
+                self.listbox.insert(END,
+                                   os.path.relpath(files1[i], img1) + "  <==>  " +
+                                   os.path.relpath(files2[i], img2))
+            info_parts.append(f"相同 {len(common)} 组")
+        else:
+            self.common_files1 = self.common_files2 = []
+
+        if 'phash' in modes:
+            pairs = find_similar_hashes(hashes1['phash'], hashes2['phash'], threshold=0.9)
+            show_num = min(100, len(pairs))
+            for i in range(show_num):
+                f1, f2, sim = pairs[i]
+                self.sim_listbox.insert(END,
+                                        os.path.relpath(f1, img1) + " <=> " +
+                                        os.path.relpath(f2, img2) +
+                                        f" ({sim:.2f})")
+            info_parts.append(f"相似 {len(pairs)} 对")
+
+        self.status.config(text="，".join(info_parts) or "无比对结果")
+        if 'md5' in modes and not self.common_files1:
             messagebox.showinfo("结果", "没有找到内容相同的图片！")
         self.compare_btn.config(state='normal')
 
