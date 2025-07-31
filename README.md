@@ -22,7 +22,6 @@ YOLO-Model-Test/
 ├── main.py                # 推理入口，可使用 CLI 或 GUI
 ├── requirements.txt       # 依赖列表
 └── tools/                 # 辅助脚本
-    └── xml2txt.py         # VOC 标注转为文本格式
 ```
 
 ## 安装依赖
