@@ -3,6 +3,16 @@ from __future__ import annotations
 
 The implementation follows the example usage from the official
 documentation: https://huggingface.co/docs/transformers/model_doc/grounding-dino
+
+@misc{liu2023grounding,
+      title={Grounding DINO: Marrying DINO with Grounded Pre-Training for Open-Set Object Detection}, 
+      author={Shilong Liu and Zhaoyang Zeng and Tianhe Ren and Feng Li and Hao Zhang and Jie Yang and Chunyuan Li and Jianwei Yang and Hang Su and Jun Zhu and Lei Zhang},
+      year={2023},
+      eprint={2303.05499},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV}
+}
+
 """
 from dataclasses import dataclass
 from pathlib import Path

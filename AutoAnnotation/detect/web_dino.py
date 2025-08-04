@@ -5,7 +5,7 @@ from transformers import AutoProcessor, AutoModelForZeroShotObjectDetection
 
 # 模型相关配置
 model_id = "IDEA-Research/grounding-dino-base"
-save_dir = "../models/grounding-dino-base"
+save_dir = "../../models/grounding-dino-base"
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 # 加载模型和处理器（只加载一次）

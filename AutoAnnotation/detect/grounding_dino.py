@@ -16,7 +16,7 @@ from transformers import AutoProcessor, AutoModelForZeroShotObjectDetection
 
 
 model_id = "IDEA-Research/grounding-dino-base"
-save_dir = "../models/grounding-dino-base"  # 指定本地目录
+save_dir = "../../models/grounding-dino-base"  # 指定本地目录
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 processor = AutoProcessor.from_pretrained(model_id, cache_dir=save_dir)
@@ -26,7 +26,7 @@ model = AutoModelForZeroShotObjectDetection.from_pretrained(model_id, cache_dir=
 # VERY important: text queries need to be lowercased + end with a dot
 
 
-image_path = "../test_data/20221126152950_002730.jpg"
+image_path = "../../test_data/20221126152950_002730.jpg"
 image = Image.open(image_path)
 
 
