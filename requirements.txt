@@ -12,3 +12,5 @@ torch==2.7.1
 tqdm==4.67.1
 transformers==4.52.4
 ultralytics==8.3.161
+tqdm==4.66.1
+Flask==2.3.3
